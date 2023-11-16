@@ -1,46 +1,147 @@
-import Link from 'next/link'
-import React from 'react'
-import { RxSketchLogo, RxDashboard, RxPerson } from 'react-icons/rx'
-import { HiOutlineShoppingBag } from 'react-icons/hi'
+import * as React from "react";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import SweatAlertTimer from "@/config/SweatAlert/timer";
+import { MdExpandLess, MdOutlineExpandMore } from "react-icons/md";
+import Collapse from "@mui/material/Collapse";
+import List from "@mui/material/List";
+import { AiOutlineDashboard } from "react-icons/ai";
+import {
+  FaRegCommentDots,
+  FaPeopleGroup,
+  FaPerson,
+  FaTeamspeak,
+  FaArrowRightFromBracket,
+} from "react-icons/fa6";
+import { FaUsers, FaMoneyBillWave } from "react-icons/fa";
+import { signOut } from "next-auth/react";
 
-import { FiSettings } from 'react-icons/fi'
+export default function Sidebar() {
+  const router = useRouter();
 
-function Sidebar({ children }) {
+  const [open, setOpen] = React.useState(false);
+  // const [open2, setOpen2] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  // const handleClick2 = () => {
+  //   setOpen2(!open2);
+  // };
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/login" });
+    SweatAlertTimer("Logout Sucessfully", "success");
+  };
+
   return (
-    <div className='flex'>
-      <div className='fixed w-20 h-screen p-4 bg-white border-r-[1px] justify-between'>
-        <div className='flex flex-col items-center'>
-          <Link href='/'>
-            <div className='bg-blue-800 text-white p-3 rounded-lg inline-block'>
-              <RxSketchLogo size={20} />
-            </div>
-          </Link>
-          <span className='border-b-[1px] border-gray-200 w-full p-2'></span>
-          <Link href='/'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <RxDashboard size={20} color='black'/>
-            </div>
-          </Link>
-          <Link href='/tagihan'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <HiOutlineShoppingBag size={20} color='black'/>
-            </div>
-          </Link>
-          <Link href='/pelanggan'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <RxPerson size={20} color='black'/>
-            </div>
-          </Link>
-          <Link href='/'>
-            <div className='bg-gray-100 hover:bg-gray-200 cursor-pointer my-4 p-3 rounded-lg inline-block'>
-              <FiSettings size={20} color='black'/>
-            </div>
-          </Link>
-        </div>
-      </div>
-      <main className='ml-20 w-full'>{children}</main>
-    </div>
-  )
-}
+    <>
+      <ListItemButton>
+        <ListItemIcon>
+          <AiOutlineDashboard size={"25px"} />
+        </ListItemIcon>
+        <Link
+          href="/admins/dashboard"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <ListItemText primary="Dashboard" />
+        </Link>
+      </ListItemButton>
+      <ListItemButton>
+        <ListItemIcon>
+          <FaUsers size={"25px"} />
+        </ListItemIcon>
+        <Link
+          href="/admins/pelanggan"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <ListItemText primary="Pelanggan" />
+        </Link>
+      </ListItemButton>
+      <ListItemButton>
+        <ListItemIcon>
+          <FaMoneyBillWave size={"25px"} />
+        </ListItemIcon>
+        <Link
+          href="/admins/tagihan"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+          }}
+        >
+          <ListItemText primary="Tagihan" />
+        </Link>
+      </ListItemButton>
+      <ListItemButton onClick={handleClick}>
+        <ListItemIcon>
+          <FaRegCommentDots size={"25px"} />
+        </ListItemIcon>
+        <ListItemText primary="Whatsapp" />
+        {open ? <MdExpandLess /> : <MdOutlineExpandMore />}
+      </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaPerson />
+            </ListItemIcon>
+            <Link
+              href="/"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Send Private" />
+            </Link>
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaPeopleGroup />
+            </ListItemIcon>
+            <Link
+              href="/"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Send Group" />
+            </Link>
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaTeamspeak />
+            </ListItemIcon>
+            <Link
+              href="/"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Broadcast" />
+            </Link>
+          </ListItemButton>
+        </List>
+      </Collapse>
 
-export default Sidebar
+      <ListItemButton>
+        <ListItemIcon>
+          <FaArrowRightFromBracket size={"25px"} />
+        </ListItemIcon>
+        <ListItemText primary="Logout" onClick={handleLogout} />
+      </ListItemButton>
+    </>
+  );
+}
