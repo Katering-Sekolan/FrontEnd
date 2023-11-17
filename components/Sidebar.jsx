@@ -34,7 +34,7 @@ export default function Sidebar() {
   // };
 
   const handleLogout = () => {
-    signOut({ callbackUrl: "/login" });
+    signOut({ callbackUrl: "/admins/login" });
     SweatAlertTimer("Logout Sucessfully", "success");
   };
 
