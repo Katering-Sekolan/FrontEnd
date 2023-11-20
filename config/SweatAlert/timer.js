@@ -1,11 +1,12 @@
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
-const SweatAlertTimer = (title, icon, timer) => {
+const SweatAlertTimer = (title, message, icon) => {
   const MySwal = withReactContent(Swal);
   MySwal.fire({
-    title: title,
-    icon: icon,
+    title,
+    text: message,
+    icon: icon === "error" ? "error" : "success",
     timer: 2000,
     timerProgressBar: true,
     showConfirmButton: false,

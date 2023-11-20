@@ -89,31 +89,57 @@ export default function Pelanggan() {
 
   const handleAddPelanggan = async () => {
     try {
-      await axios.post(
+      if (!newPelanggan.nama || !newPelanggan.nohp) {
+        handleCloseModal();
+        SweatAlertTimer("Error!", "Nama dan No HP tidak boleh kosong", "error");
+        return;
+      }
+
+      if (isNaN(newPelanggan.nohp)) {
+        handleCloseModal();
+        SweatAlertTimer("Error!", "No HP harus berupa angka", "error");
+        return;
+      }
+
+      const response = await axios.post(
         process.env.NEXT_PUBLIC_API_URL + "/u/create",
         newPelanggan
       );
+
       fetchPelanggan();
       handleCloseModal();
-      SweatAlertTimer("Pelanggan Ditambahkan!", "success");
+      SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
-      console.error("Error adding pelanggan:", error);
-      SweatAlertTimer("Error!", "Gagal menambahkan pelanggan", "error");
+      handleCloseModal();
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 
   const handleUpdatePelanggan = async () => {
     try {
-      await axios.put(
+      if (!newPelanggan.nama || !newPelanggan.nohp) {
+        handleCloseModal();
+        SweatAlertTimer("Error!", "Nama dan No HP tidak boleh kosong", "error");
+        return;
+      }
+
+      if (isNaN(newPelanggan.nohp)) {
+        handleCloseModal();
+        SweatAlertTimer("Error!", "No HP harus berupa angka", "error");
+        return;
+      }
+
+      const response = await axios.put(
         process.env.NEXT_PUBLIC_API_URL + `/u/update/${editingPelanggan}`,
         newPelanggan
       );
+
       fetchPelanggan();
       handleCloseModal();
-      SweatAlertTimer("Pelanggan Diupdate!", "success");
+      SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
-      console.error("Error updating pelanggan:", error);
-      SweatAlertTimer("Error!", "Gagal mengupdate pelanggan", "error");
+      handleCloseModal();
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 
@@ -128,15 +154,16 @@ export default function Pelanggan() {
 
   const handleDeletePelanggan = async (pelangganId) => {
     try {
-      await axios.delete(
+      const response = await axios.delete(
         process.env.NEXT_PUBLIC_API_URL + `/u/delete/${pelangganId}`
       );
+
       fetchPelanggan();
       handleCloseModal();
-      SweatAlertTimer("Pelanggan Dihapus!", "success");
+      SweatAlertTimer("Pelanggan Dihapus!", response.data.message, "success");
     } catch (error) {
-      console.error("Error deleting pelanggan:", error);
-      SweatAlertTimer("Error!", "Gagal menghapus pelanggan", "error");
+      handleCloseModal();
+      SweatAlertTimer("Error!", error.data.message, "error");
     }
   };
 
