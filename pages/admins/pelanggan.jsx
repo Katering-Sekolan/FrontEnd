@@ -79,6 +79,10 @@ export default function Pelanggan() {
     setNewPelanggan({ nohp: "", nama: "" });
   };
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewPelanggan({ ...newPelanggan, [name]: value });
