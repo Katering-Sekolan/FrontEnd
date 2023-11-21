@@ -31,7 +31,7 @@ export default function Pelanggan() {
       renderCell: (params) => (
         <>
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             startIcon={<EditIcon />}
             onClick={() => handleEditPelanggan(params.row.id)}
@@ -40,8 +40,9 @@ export default function Pelanggan() {
             Edit
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
+            color="error"
             startIcon={<DeleteIcon />}
             onClick={() => handleDeletePelanggan(params.row.id)}
           >
@@ -76,10 +77,6 @@ export default function Pelanggan() {
     setOpenModal(true);
     setEditingPelanggan(null);
     setNewPelanggan({ nohp: "", nama: "" });
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
   };
 
   const handleInputChange = (e) => {
@@ -179,11 +176,12 @@ export default function Pelanggan() {
             padding: 2,
           }}
         >
-          <Button variant="contained" onClick={handleOpenModal}>
-            Tambah Pelanggan
-          </Button>
-
-          <DataGrid rows={pelanggan} columns={columns} pageSize={5} />
+          <div>
+            <Button variant="contained" onClick={handleOpenModal}>
+              Tambah Pelanggan
+            </Button>
+          </div>
+          <DataGrid rows={pelanggan} columns={columns} pageSize={10} />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box

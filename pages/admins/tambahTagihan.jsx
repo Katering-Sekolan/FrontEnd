@@ -11,10 +11,12 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
+import { Grid } from "@mui/material";
 import theme from "@/config/theme";
+import InputAdornment from "@mui/material/InputAdornment";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 
-export default function Tagihan() {
+export default function tambahTagihan() {
   const [hargaTagihan, setHargaTagihan] = useState("");
   const [selectedPelanggan, setSelectedPelanggan] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
@@ -102,8 +104,8 @@ export default function Tagihan() {
         {
           user_id: selectedPelanggan,
           jumlah_pesan: selectedPelanggan.length,
-          tanggal_tagihan: new Date(tagihanDate),
-          total_tagihan: parseFloat(hargaTagihan) * selectedPelanggan.length,
+          tanggal_tagihan: tagihanDate,
+          total_tagihan: hargaTagihan,
         }
       );
 
@@ -127,20 +129,25 @@ export default function Tagihan() {
             padding: 2,
           }}
         >
-          <div>
-            <Button variant="contained" onClick={handleOpenModal}>
-              Tambah Tagihan
-            </Button>
-            <TextField
-              label="Tanggal Tagihan"
-              type="date"
-              onChange={(e) => setTagihanDate(e.target.value)}
-              fullWidth
-              margin="normal"
-            />
-          </div>
-
-          <DataGrid rows={pelangganList} columns={columns} pageSize={5} />
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <TextField
+                label="Tanggal Tagihan"
+                type="date"
+                onChange={(e) => setTagihanDate(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                margin="normal"
+              />
+            </Grid>
+            <Grid item>
+              <Button variant="contained" onClick={handleOpenModal}>
+                Tambah Tagihan
+              </Button>
+            </Grid>
+          </Grid>
+          <DataGrid rows={pelangganList} columns={columns} pageSize={10} />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
@@ -165,6 +172,11 @@ export default function Tagihan() {
                       onChange={(e) => setHargaTagihan(e.target.value)}
                       fullWidth
                       margin="normal"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">Rp. </InputAdornment>
+                        ),
+                      }}
                     />
                     <Button
                       variant="contained"

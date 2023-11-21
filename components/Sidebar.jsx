@@ -15,6 +15,9 @@ import {
   FaPerson,
   FaTeamspeak,
   FaArrowRightFromBracket,
+  FaMoneyBill,
+  FaMoneyBills,
+  FaMoneyBillTransfer,
 } from "react-icons/fa6";
 import { FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import { signOut } from "next-auth/react";
@@ -68,20 +71,45 @@ export default function Sidebar() {
           <ListItemText primary="Pelanggan" />
         </Link>
       </ListItemButton>
-      <ListItemButton>
+      <ListItemButton onClick={handleClick}>
         <ListItemIcon>
           <FaMoneyBillWave size={"25px"} />
         </ListItemIcon>
-        <Link
-          href="/admins/tagihan"
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-          }}
-        >
-          <ListItemText primary="Tagihan" />
-        </Link>
+        <ListItemText primary="Tagihan" />
+        {open ? <MdExpandLess /> : <MdOutlineExpandMore />}
       </ListItemButton>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaMoneyBills />
+            </ListItemIcon>
+            <Link
+              href="/admins/tambahTagihan"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Tambah Tagihan" />
+            </Link>
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaMoneyBillTransfer />
+            </ListItemIcon>
+            <Link
+              href="/admins/ubahTagihan"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Ubah Tagihan" />
+            </Link>
+          </ListItemButton>
+        </List>
+      </Collapse>
       <ListItemButton onClick={handleClick}>
         <ListItemIcon>
           <FaRegCommentDots size={"25px"} />
