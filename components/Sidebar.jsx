@@ -27,15 +27,15 @@ export default function Sidebar() {
   const router = useRouter();
 
   const [open, setOpen] = React.useState(false);
-  // const [open2, setOpen2] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
 
-  // const handleClick2 = () => {
-  //   setOpen2(!open2);
-  // };
+  const handleClick2 = () => {
+    setOpen2(!open2);
+  };
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/login" });
@@ -111,14 +111,14 @@ export default function Sidebar() {
           </ListItemButton>
         </List>
       </Collapse>
-      <ListItemButton onClick={handleClick}>
+      <ListItemButton onClick={handleClick2}>
         <ListItemIcon>
           <FaRegCommentDots size={"25px"} />
         </ListItemIcon>
         <ListItemText primary="Whatsapp" />
-        {open ? <MdExpandLess /> : <MdOutlineExpandMore />}
+        {open2 ? <MdExpandLess /> : <MdOutlineExpandMore />}
       </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={open2} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <ListItemButton sx={{ pl: 4 }}>
             <ListItemIcon>
