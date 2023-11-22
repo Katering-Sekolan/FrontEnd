@@ -15,6 +15,7 @@ import {
   FaPerson,
   FaTeamspeak,
   FaArrowRightFromBracket,
+  FaForumbee,
 } from "react-icons/fa6";
 import { FaUsers, FaMoneyBillWave } from "react-icons/fa";
 import { signOut } from "next-auth/react";
@@ -91,6 +92,20 @@ export default function Sidebar() {
       </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaForumbee />
+            </ListItemIcon>
+            <Link
+              href="/admins/WG/connection"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Koneksi" />
+            </Link>
+          </ListItemButton>
           <ListItemButton sx={{ pl: 4 }}>
             <ListItemIcon>
               <FaPerson />
