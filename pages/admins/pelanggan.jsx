@@ -10,15 +10,22 @@ import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import axios from "axios";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
+import SweatAlertDelete from "@/config/SweatAlert/delete";
 
 export default function Pelanggan() {
   const [pelanggan, setPelanggan] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openModal2, setOpenModal2] = useState(false);
   const [newPelanggan, setNewPelanggan] = useState({ nohp: "", nama: "" });
   const [editingPelanggan, setEditingPelanggan] = useState(null);
+  const [number, setNumber] = useState("");
+  console.log(number);
+  const [message, setMessage] = useState("");
+  // const [whatsapp, setWhatsapp] = useState({ number: noHp, message: "" });
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
@@ -47,6 +54,16 @@ export default function Pelanggan() {
             onClick={() => handleDeletePelanggan(params.row.id)}
           >
             Delete
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            color="success"
+            startIcon={<WhatsAppIcon />}
+            sx={{ marginLeft: 1 }}
+            onClick={() => handleWhatsappPelanggan(params.row.id)}
+          >
+            WA
           </Button>
         </>
       ),
@@ -79,13 +96,24 @@ export default function Pelanggan() {
     setNewPelanggan({ nohp: "", nama: "" });
   };
 
+  const handleOpenModal2 = () => {
+    setOpenModal2(true);
+    setWhatsapp({ number: "", message: "" });
+  };
+
   const handleCloseModal = () => {
     setOpenModal(false);
+    setOpenModal2(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewPelanggan({ ...newPelanggan, [name]: value });
+  };
+
+  const handleMessage = (e) => {
+    const message = e.target.value;
+    setMessage(message);
   };
 
   const handleAddPelanggan = async () => {
@@ -144,6 +172,21 @@ export default function Pelanggan() {
     }
   };
 
+  const handleSendMessage = async () => {
+    try {
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_API_URL + "/w/send-message",
+        { number, message }
+      );
+      console.log(response.data);
+      handleCloseModal();
+      SweatAlertTimer("Success!", response.data.message, "success");
+    } catch (error) {
+      handleCloseModal();
+      SweatAlertTimer("Error!", error.response.data.message, "error");
+    }
+  };
+
   const handleEditPelanggan = (pelangganId) => {
     const pelangganToEdit = pelanggan.find(
       (pelanggan) => pelanggan.id === pelangganId
@@ -155,16 +198,40 @@ export default function Pelanggan() {
 
   const handleDeletePelanggan = async (pelangganId) => {
     try {
-      const response = await axios.delete(
-        process.env.NEXT_PUBLIC_API_URL + `/u/delete/${pelangganId}`
+      const shouldDelete = await SweatAlertDelete(
+        "Pelanggan Dihapus!",
+        "Apakah Anda yakin ingin menghapus pelanggan ini?",
+        "warning"
       );
 
-      fetchPelanggan();
-      handleCloseModal();
-      SweatAlertTimer("Pelanggan Dihapus!", response.data.message, "success");
+      if (shouldDelete) {
+        const response = await axios.delete(
+          process.env.NEXT_PUBLIC_API_URL + `/u/delete/${pelangganId}`
+        );
+
+        fetchPelanggan();
+        handleCloseModal();
+        SweatAlertTimer("Deleted!", "Your file has been deleted.", "success");
+      } else {
+        // User canceled the delete action
+        // You can handle it here if needed
+      }
     } catch (error) {
       handleCloseModal();
       SweatAlertTimer("Error!", error.data.message, "error");
+    }
+  };
+
+  const handleWhatsappPelanggan = async (pelangganId) => {
+    setOpenModal2(true);
+    try {
+      const response = await axios.get(
+        process.env.NEXT_PUBLIC_API_URL + `/u/get-by-id/${pelangganId}`
+      );
+
+      setNumber(response.data.data.nohp);
+    } catch (error) {
+      console.error("Error fetching pelanggan:", error);
     }
   };
 
@@ -230,6 +297,48 @@ export default function Pelanggan() {
                   fullWidth
                 >
                   {editingPelanggan ? "Update" : "Simpan"}
+                </Button>
+              </div>
+            </Box>
+          </Modal>
+
+          <Modal open={openModal2} onClose={handleCloseModal}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                bgcolor: "white",
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
+              <h2>Kirim pesan whatsapp</h2>
+              <div>
+                <TextField
+                  label="No Hp."
+                  name="number"
+                  value={number}
+                  disabled
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Pesan"
+                  name="message"
+                  onChange={handleMessage}
+                  fullWidth
+                  margin="normal"
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleSendMessage}
+                  startIcon={<WhatsAppIcon />}
+                  color="success"
+                  fullWidth
+                >
+                  Kirim
                 </Button>
               </div>
             </Box>
