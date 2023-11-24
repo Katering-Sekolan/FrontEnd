@@ -17,24 +17,29 @@ import {
   FaArrowRightFromBracket,
   FaForumbee,
   FaMoneyBill,
+  FaClipboardList,
   FaMoneyBills,
+  FaUsers,
   FaMoneyBillTransfer,
 } from "react-icons/fa6";
-import { FaUsers, FaMoneyBillWave } from "react-icons/fa";
+import { BsClipboard2Plus } from "react-icons/bs";
+import { LuClipboardEdit } from "react-icons/lu";
 import { signOut } from "next-auth/react";
 
 export default function Sidebar() {
   const router = useRouter();
 
-  const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
+  const [open, setOpen] = React.useState({
+    tagihan: false,
+    whatsapp: false,
+    pembayaran: false,
+  });
 
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
-  const handleClick2 = () => {
-    setOpen2(!open2);
+  const handleClick = (dropdown) => {
+    setOpen((prevState) => ({
+      ...prevState,
+      [dropdown]: !prevState[dropdown],
+    }));
   };
 
   const handleLogout = () => {
@@ -72,18 +77,18 @@ export default function Sidebar() {
           <ListItemText primary="Pelanggan" />
         </Link>
       </ListItemButton>
-      <ListItemButton onClick={handleClick}>
+      <ListItemButton onClick={() => handleClick("tagihan")}>
         <ListItemIcon>
-          <FaMoneyBillWave size={"25px"} />
+          <FaClipboardList size={"25px"} />
         </ListItemIcon>
         <ListItemText primary="Tagihan" />
-        {open ? <MdExpandLess /> : <MdOutlineExpandMore />}
+        {open.tagihan ? <MdExpandLess /> : <MdOutlineExpandMore />}
       </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={open.tagihan} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <ListItemButton sx={{ pl: 4 }}>
             <ListItemIcon>
-              <FaMoneyBills />
+              <BsClipboard2Plus />
             </ListItemIcon>
             <Link
               href="/admins/tambahTagihan"
@@ -97,7 +102,7 @@ export default function Sidebar() {
           </ListItemButton>
           <ListItemButton sx={{ pl: 4 }}>
             <ListItemIcon>
-              <FaMoneyBillTransfer />
+              <LuClipboardEdit />
             </ListItemIcon>
             <Link
               href="/admins/ubahTagihan"
@@ -111,14 +116,53 @@ export default function Sidebar() {
           </ListItemButton>
         </List>
       </Collapse>
-      <ListItemButton onClick={handleClick2}>
+      <ListItemButton onClick={() => handleClick("pembayaran")}>
+        <ListItemIcon>
+          <FaMoneyBill size={"25px"} />
+        </ListItemIcon>
+        <ListItemText primary="Pembayaran" />
+        {open.pembayaran ? <MdExpandLess /> : <MdOutlineExpandMore />}
+      </ListItemButton>
+      <Collapse in={open.pembayaran} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaMoneyBills />
+            </ListItemIcon>
+            <Link
+              href="/admins/tagihanBulanan"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Tagihan Bulanan" />
+            </Link>
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaMoneyBillTransfer />
+            </ListItemIcon>
+            <Link
+              href="/admins/riwayatPembayaran"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Riwayat Pembayaran" />
+            </Link>
+          </ListItemButton>
+        </List>
+      </Collapse>
+      <ListItemButton onClick={() => handleClick("whatsapp")}>
         <ListItemIcon>
           <FaRegCommentDots size={"25px"} />
         </ListItemIcon>
         <ListItemText primary="Whatsapp" />
-        {open2 ? <MdExpandLess /> : <MdOutlineExpandMore />}
+        {open.whatsapp ? <MdExpandLess /> : <MdOutlineExpandMore />}
       </ListItemButton>
-      <Collapse in={open2} timeout="auto" unmountOnExit>
+      <Collapse in={open.whatsapp} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           <ListItemButton sx={{ pl: 4 }}>
             <ListItemIcon>
