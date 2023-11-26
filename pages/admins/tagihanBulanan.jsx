@@ -26,7 +26,6 @@ export default function TagihanBulanan() {
     { field: "nama", headerName: "Nama", flex: 1 },
     { field: "no_whatsapp", headerName: "No. Whatsapp", flex: 1 },
     { field: "total_tagihan", headerName: "Total Tagihan", flex: 1 },
-    { field: "tanggal_tagihan", headerName: "Tanggal Tagihan", flex: 1 },
     {
       field: "status_pembayaran",
       headerName: "Status Pembayaran",
@@ -54,8 +53,31 @@ export default function TagihanBulanan() {
 
   const fetchData = async () => {
     try {
-      //infowangait
-      setPelangganList([]);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/p/get-by-month/${tagihanDate}`
+      );
+
+      const tagihanData = response.data.data || [];
+
+      const pelangganData = await Promise.all(
+        tagihanData.map(async (tagihan) => {
+          const userResponse = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/u/get-by-id/${tagihan.user_id}`
+          );
+
+          const userData = userResponse.data.data || {};
+
+          return {
+            id: tagihan.tagihan_id || Math.random().toString(36).substring(7),
+            nama: userData.nama || "",
+            no_whatsapp: userData.nohp || "",
+            total_tagihan: tagihan.jumlah_pembayaran,
+            status_pembayaran: tagihan.status_pembayaran,
+          };
+        })
+      );
+
+      setPelangganList(pelangganData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

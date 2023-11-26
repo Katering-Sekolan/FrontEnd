@@ -105,7 +105,18 @@ export default function tambahTagihan() {
           user_id: selectedPelanggan,
           jumlah_pesan: selectedPelanggan.length,
           tanggal_tagihan: tagihanDate,
-          total_tagihan: hargaTagihan,
+          total_tagihan: parseInt(hargaTagihan), // Convert hargaTagihan to an integer
+        }
+      );
+
+      // Additional code to handle saving payment details
+      const paymentResponse = await axios.post(
+        process.env.NEXT_PUBLIC_API_URL + "/p/create",
+        {
+          user_id: selectedPelanggan, // Assuming selectedPelanggan is the user_id for the payment
+          tanggal_pembayaran: tagihanDate, // Use tagihanDate as the payment date
+          status_pembayaran: "Belum Lunas", // Set the status to "Belum Lunas"
+          jumlah_pembayaran: parseInt(hargaTagihan), // Convert hargaTagihan to an integer
         }
       );
 
