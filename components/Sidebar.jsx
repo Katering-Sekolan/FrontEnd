@@ -21,6 +21,7 @@ import {
   FaMoneyBills,
   FaUsers,
   FaMoneyBillTransfer,
+  FaMoneyCheck,
 } from "react-icons/fa6";
 import { BsClipboard2Plus } from "react-icons/bs";
 import { LuClipboardEdit } from "react-icons/lu";
@@ -112,6 +113,20 @@ export default function Sidebar() {
               }}
             >
               <ListItemText primary="Ubah Tagihan" />
+            </Link>
+          </ListItemButton>
+          <ListItemButton sx={{ pl: 4 }}>
+            <ListItemIcon>
+              <FaMoneyCheck />
+            </ListItemIcon>
+            <Link
+              href="/admins/aturDeposit"
+              style={{
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Deposit" />
             </Link>
           </ListItemButton>
         </List>

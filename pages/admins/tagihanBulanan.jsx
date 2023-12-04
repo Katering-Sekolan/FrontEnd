@@ -24,7 +24,7 @@ export default function TagihanBulanan() {
 
   const columns = [
     { field: "nama", headerName: "Nama", flex: 1 },
-    { field: "no_whatsapp", headerName: "No. Whatsapp", flex: 1 },
+    { field: "no_whatsapp", headerName: "Nomor HP", flex: 1 },
     { field: "total_tagihan", headerName: "Total Tagihan", flex: 1 },
     {
       field: "status_pembayaran",
@@ -131,7 +131,7 @@ export default function TagihanBulanan() {
             padding: 2,
           }}
         >
-          <Grid container spacing={2} alignItems="center">
+          <Grid >
             <Grid item>
               <TextField
                 label="Bulan Tagihan"

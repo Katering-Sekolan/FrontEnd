@@ -15,22 +15,28 @@ import axios from "axios";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import SweatAlertDelete from "@/config/SweatAlert/delete";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 export default function Pelanggan() {
   const [pelanggan, setPelanggan] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
-  const [newPelanggan, setNewPelanggan] = useState({ nohp: "", nama: "" });
+  const [newPelanggan, setNewPelanggan] = useState({ nomor_hp: "", nama: "" });
   const [editingPelanggan, setEditingPelanggan] = useState(null);
   const [number, setNumber] = useState("");
-  console.log(number);
   const [message, setMessage] = useState("");
-  // const [whatsapp, setWhatsapp] = useState({ number: noHp, message: "" });
+  const [filteredPelanggan, setFilteredPelanggan] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  // const [whatsapp, setWhatsapp] = useState({ number: nomor_hp, message: "" });
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "nohp", headerName: "No HP", width: 250 },
+    { field: "nomor_hp", headerName: "Nomor HP", width: 250 },
     { field: "nama", headerName: "Nama", width: 250 },
+    { field: "kelas", headerName: "Kelas", width: 250 },
     {
       field: "actions",
       headerName: "Actions",
@@ -46,7 +52,7 @@ export default function Pelanggan() {
           >
             Edit
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             size="small"
             color="error"
@@ -54,7 +60,7 @@ export default function Pelanggan() {
             onClick={() => handleDeletePelanggan(params.row.id)}
           >
             Delete
-          </Button>
+          </Button> */}
           <Button
             variant="contained"
             size="small"
@@ -70,21 +76,43 @@ export default function Pelanggan() {
     },
   ];
 
+  //heheehheh
+  const kelasOptions = [
+    { label: "TK", value: "TK" },
+    { label: "Kelas 1", value: "Kelas 1" },
+    { label: "Kelas 2", value: "Kelas 2" },
+    { label: "Kelas 3", value: "Kelas 3" },
+    { label: "Kelas 4", value: "Kelas 4" },
+    { label: "Kelas 5", value: "Kelas 5" },
+    { label: "Kelas 6", value: "Kelas 6" },
+    { label: "Kelas 7", value: "Kelas 7" },
+    { label: "Kelas 8", value: "Kelas 8" },
+    { label: "Kelas 9", value: "Kelas 9" },
+  ];
+
   useEffect(() => {
     fetchPelanggan();
   }, []);
+  useEffect(() => {
+    search();
+  }, [searchInput, pelanggan]);
 
   const fetchPelanggan = async () => {
     try {
       const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + "/u/get-all"
+        process.env.NEXT_PUBLIC_API_URL + "/user"
       );
-      // Menambahkan properti 'id' ke setiap objek pelanggan
-      const pelangganWithId = response.data.data.map((pelanggan) => ({
-        ...pelanggan,
-        id: pelanggan._id,
-      }));
-      setPelanggan(pelangganWithId);
+
+      if (response.data.status === "success") {
+        const pelangganWithId = response.data.data.map((pelanggan) => ({
+          ...pelanggan,
+          id: pelanggan.id,
+        }));
+
+        setPelanggan(pelangganWithId);
+      } else {
+        console.error("Error fetching pelanggan:", response.data.message);
+      }
     } catch (error) {
       console.error("Error fetching pelanggan:", error);
     }
@@ -93,7 +121,7 @@ export default function Pelanggan() {
   const handleOpenModal = () => {
     setOpenModal(true);
     setEditingPelanggan(null);
-    setNewPelanggan({ nohp: "", nama: "" });
+    setNewPelanggan({ nomor_hp: "", nama: "" });
   };
 
   const handleOpenModal2 = () => {
@@ -118,20 +146,24 @@ export default function Pelanggan() {
 
   const handleAddPelanggan = async () => {
     try {
-      if (!newPelanggan.nama || !newPelanggan.nohp) {
+      if (!newPelanggan.nama || !newPelanggan.nomor_hp || !newPelanggan.kelas) {
         handleCloseModal();
-        SweatAlertTimer("Error!", "Nama dan No HP tidak boleh kosong", "error");
+        SweatAlertTimer(
+          "Error!",
+          "Nama, No HP, dan Kelas tidak boleh kosong",
+          "error"
+        );
         return;
       }
 
-      if (isNaN(newPelanggan.nohp)) {
+      if (isNaN(newPelanggan.nomor_hp)) {
         handleCloseModal();
         SweatAlertTimer("Error!", "No HP harus berupa angka", "error");
         return;
       }
 
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/u/create",
+        process.env.NEXT_PUBLIC_API_URL + "/user/create",
         newPelanggan
       );
 
@@ -146,20 +178,24 @@ export default function Pelanggan() {
 
   const handleUpdatePelanggan = async () => {
     try {
-      if (!newPelanggan.nama || !newPelanggan.nohp) {
+      if (!newPelanggan.nama || !newPelanggan.nomor_hp || !newPelanggan.kelas) {
         handleCloseModal();
-        SweatAlertTimer("Error!", "Nama dan No HP tidak boleh kosong", "error");
+        SweatAlertTimer(
+          "Error!",
+          "Nama, No HP, dan Kelas tidak boleh kosong",
+          "error"
+        );
         return;
       }
 
-      if (isNaN(newPelanggan.nohp)) {
+      if (isNaN(newPelanggan.nomor_hp)) {
         handleCloseModal();
         SweatAlertTimer("Error!", "No HP harus berupa angka", "error");
         return;
       }
 
       const response = await axios.put(
-        process.env.NEXT_PUBLIC_API_URL + `/u/update/${editingPelanggan}`,
+        process.env.NEXT_PUBLIC_API_URL + `/user/update/${editingPelanggan}`,
         newPelanggan
       );
 
@@ -206,7 +242,7 @@ export default function Pelanggan() {
 
       if (shouldDelete) {
         const response = await axios.delete(
-          process.env.NEXT_PUBLIC_API_URL + `/u/delete/${pelangganId}`
+          process.env.NEXT_PUBLIC_API_URL + `/user/delete/${pelangganId}`
         );
 
         fetchPelanggan();
@@ -229,10 +265,20 @@ export default function Pelanggan() {
         process.env.NEXT_PUBLIC_API_URL + `/u/get-by-id/${pelangganId}`
       );
 
-      setNumber(response.data.data.nohp);
+      setNumber(response.data.data.nomor_hp);
     } catch (error) {
       console.error("Error fetching pelanggan:", error);
     }
+  };
+
+  const search = () => {
+    const filteredData = pelanggan.filter(
+      (pelanggan) =>
+        pelanggan.nama.toLowerCase().includes(searchInput.toLowerCase()) ||
+        pelanggan.nomor_hp.toString().includes(searchInput.toLowerCase()) ||
+        pelanggan.kelas.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setFilteredPelanggan(filteredData);
   };
 
   return (
@@ -247,12 +293,32 @@ export default function Pelanggan() {
             padding: 2,
           }}
         >
-          <div>
+          <div
+            style={{
+              marginBottom: "8px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Button variant="contained" onClick={handleOpenModal}>
               Tambah Pelanggan
             </Button>
+            <TextField
+              label="Cari Nama, Nomor HP, atau Kelas"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              variant="outlined"
+              size="small"
+              style={{ width: "300px" }}
+            />
           </div>
-          <DataGrid rows={pelanggan} columns={columns} pageSize={10} />
+
+          <DataGrid
+            rows={filteredPelanggan.length > 0 ? filteredPelanggan : pelanggan}
+            columns={columns}
+            pageSize={10}
+          />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
@@ -280,12 +346,30 @@ export default function Pelanggan() {
                 />
                 <TextField
                   label="No HP"
-                  name="nohp"
-                  value={newPelanggan.nohp}
+                  name="nomor_hp"
+                  value={newPelanggan.nomor_hp}
                   onChange={handleInputChange}
                   fullWidth
                   margin="normal"
                 />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel id="kelas-label">Kelas</InputLabel>
+                  <Select
+                    labelId="kelas-label"
+                    id="kelas"
+                    name="kelas"
+                    value={newPelanggan.kelas}
+                    onChange={handleInputChange}
+                    label="Kelas"
+                  >
+                    {kelasOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
                 <Button
                   variant="contained"
                   onClick={

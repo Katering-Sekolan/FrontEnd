@@ -17,46 +17,61 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 
 export default function tambahTagihan() {
-  const [hargaTagihan, setHargaTagihan] = useState("");
+  const [efektif_snack, setefektif_snack] = useState("");
+  const [efektif_makanSiang, setefektif_maanSiang] = useState("");
   const [selectedPelanggan, setSelectedPelanggan] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
   const [tagihanDate, setTagihanDate] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [filteredTagihan, setFilteredTagihan] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "nohp", headerName: "No HP", width: 200 },
-    { field: "nama", headerName: "Nama", width: 250 },
     {
-      field: "checklist",
-      headerName: "Pesan",
+      field: "select",
+      headerName: "Select",
       width: 100,
-      renderCell: (params) => (
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={selectedPelanggan.includes(params.row.id)}
-              onChange={() => handleCheckboxChange(params.row.id)}
-            />
+      renderHeader: (params) => (
+        <Checkbox
+          indeterminate={
+            selectedPelanggan.length > 0 &&
+            selectedPelanggan.length < pelangganList.length
           }
+          checked={selectedPelanggan.length === pelangganList.length}
+          onChange={handleSelectAllCheckboxChange}
+        />
+      ),
+      renderCell: (params) => (
+        <Checkbox
+          checked={selectedPelanggan.includes(params.row.id)}
+          onChange={() => handleCheckboxChange(params.row.id)}
         />
       ),
     },
+    { field: "index", headerName: "ID", width: 100 },
+    { field: "nama", headerName: "Nama", width: 250 },
+    { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
+    { field: "kelas", headerName: "Kelas", width: 250 },
   ];
 
   useEffect(() => {
     fetchPelangganList();
   }, []);
 
+  useEffect(() => {
+    search();
+  }, [searchInput, pelangganList]);
+
   const fetchPelangganList = async () => {
     try {
       const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + "/u/get-all"
+        process.env.NEXT_PUBLIC_API_URL + "/user"
       );
 
-      const pelangganWithId = response.data.data.map((pelanggan) => ({
+      const pelangganWithId = response.data.data.map((pelanggan, index) => ({
         ...pelanggan,
-        id: pelanggan._id,
+        id: pelanggan.id,
+        index: index + 1,
       }));
       setPelangganList(pelangganWithId);
     } catch (error) {
@@ -71,6 +86,15 @@ export default function tambahTagihan() {
       );
     } else {
       setSelectedPelanggan([...selectedPelanggan, pelangganId]);
+    }
+  };
+
+  const handleSelectAllCheckboxChange = (event) => {
+    if (event.target.checked) {
+      const allPelangganIds = pelangganList.map((pelanggan) => pelanggan.id);
+      setSelectedPelanggan(allPelangganIds);
+    } else {
+      setSelectedPelanggan([]);
     }
   };
 
@@ -94,33 +118,20 @@ export default function tambahTagihan() {
   const handleSaveTagihan = async () => {
     try {
       handleCloseModal();
-      if (!hargaTagihan || selectedPelanggan.length === 0) {
+      if (!efektif_snack || selectedPelanggan.length === 0) {
         SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
         return;
       }
 
       const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/t/create",
+        process.env.NEXT_PUBLIC_API_URL + "/tagihanBulanan/create",
         {
           user_id: selectedPelanggan,
-          jumlah_pesan: selectedPelanggan.length,
           tanggal_tagihan: tagihanDate,
-          total_tagihan: parseInt(hargaTagihan), 
+          efektif_snack: parseInt(efektif_snack),
+          efektif_makanSiang: parseInt(efektif_makanSiang),
         }
       );
-
-      
-      const paymentResponse = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/p/create",
-        {
-          user_id: selectedPelanggan, 
-          tanggal_pembayaran: tagihanDate, 
-          status_pembayaran: "Belum Lunas", 
-          jumlah_pembayaran: parseInt(hargaTagihan), 
-        }
-      );
-
-      handleCloseModal();
       SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
       handleCloseModal();
@@ -128,11 +139,22 @@ export default function tambahTagihan() {
     }
   };
 
+  const search = () => {
+    const filteredData = pelangganList.filter(
+      (pelanggan) =>
+        pelanggan.nama.toLowerCase().includes(searchInput.toLowerCase()) ||
+        pelanggan.kelas.toLowerCase().includes(searchInput.toLowerCase()) ||
+        pelanggan.nomor_hp.toString().includes(searchInput.toLowerCase())
+    );
+
+    setFilteredTagihan(filteredData);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Tagihan Katering Qita" />
+        <Header navName="Tambah Tagihan Katering Qita" />
         <Box
           sx={{
             marginTop: 8,
@@ -140,25 +162,44 @@ export default function tambahTagihan() {
             padding: 2,
           }}
         >
-          <Grid container spacing={2} alignItems="center">
-            <Grid item>
+          <Grid
+            container
+            marginBottom="8px"
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <div item>
               <TextField
                 label="Tanggal Tagihan"
-                type="date"
+                type="month"
+                style={{ marginRight: "8px" }}
                 onChange={(e) => setTagihanDate(e.target.value)}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                margin="normal"
+                size="small"
               />
-            </Grid>
-            <Grid item>
               <Button variant="contained" onClick={handleOpenModal}>
                 Tambah Tagihan
               </Button>
+            </div>
+            <Grid item>
+              <TextField
+                label="cari"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                variant="outlined"
+                size="small"
+                style={{ width: "300px" }}
+              />
             </Grid>
           </Grid>
-          <DataGrid rows={pelangganList} columns={columns} pageSize={10} />
+          <DataGrid
+            rows={filteredTagihan.length > 0 ? filteredTagihan : pelangganList}
+            columns={columns}
+            pageSize={10}
+          />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
@@ -177,17 +218,20 @@ export default function tambahTagihan() {
                 {tagihanDate && (
                   <>
                     <TextField
-                      label="Harga Tagihan"
+                      label="Jumalah Snack"
                       type="number"
-                      value={hargaTagihan}
-                      onChange={(e) => setHargaTagihan(e.target.value)}
+                      value={efektif_snack}
+                      onChange={(e) => setefektif_snack(e.target.value)}
                       fullWidth
                       margin="normal"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">Rp. </InputAdornment>
-                        ),
-                      }}
+                    />
+                    <TextField
+                      label="Jumalah Makan Siang"
+                      type="number"
+                      value={efektif_makanSiang}
+                      onChange={(e) => setefektif_maanSiang(e.target.value)}
+                      fullWidth
+                      margin="normal"
                     />
                     <Button
                       variant="contained"
