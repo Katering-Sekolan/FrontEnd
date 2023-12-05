@@ -19,9 +19,11 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import { PelangganService } from "@/services/pelangganService";
 
 export default function Pelanggan() {
   const [pelanggan, setPelanggan] = useState([]);
+  // console.log(pelanggan);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
   const [newPelanggan, setNewPelanggan] = useState({ nomor_hp: "", nama: "" });
@@ -99,9 +101,7 @@ export default function Pelanggan() {
 
   const fetchPelanggan = async () => {
     try {
-      const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + "/user"
-      );
+      const response = await PelangganService.getAll();
 
       if (response.data.status === "success") {
         const pelangganWithId = response.data.data.map((pelanggan) => ({
@@ -162,10 +162,7 @@ export default function Pelanggan() {
         return;
       }
 
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/user/create",
-        newPelanggan
-      );
+      const response = await PelangganService.create(newPelanggan);
 
       fetchPelanggan();
       handleCloseModal();
@@ -194,8 +191,8 @@ export default function Pelanggan() {
         return;
       }
 
-      const response = await axios.put(
-        process.env.NEXT_PUBLIC_API_URL + `/user/update/${editingPelanggan}`,
+      const response = await PelangganService.update(
+        editingPelanggan,
         newPelanggan
       );
 
@@ -261,9 +258,7 @@ export default function Pelanggan() {
   const handleWhatsappPelanggan = async (pelangganId) => {
     setOpenModal2(true);
     try {
-      const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + `/u/get-by-id/${pelangganId}`
-      );
+      const response = await PelangganService.getOne(pelangganId);
 
       setNumber(response.data.data.nomor_hp);
     } catch (error) {

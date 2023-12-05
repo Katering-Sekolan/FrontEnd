@@ -11,6 +11,7 @@ import theme from "@/config/theme";
 import Header from "@/components/Header";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { Grid } from "@mui/material";
+import { DepositService } from "@/services/depositService";
 
 export default function DepositManagement() {
   const [deposits, setDeposits] = useState([]);
@@ -49,9 +50,7 @@ export default function DepositManagement() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/deposit`
-      );
+      const response = await DepositService.getAll();
 
       const depositsWithId = response.data.data.map((deposit, index) => ({
         id: deposit.id,
@@ -88,21 +87,20 @@ export default function DepositManagement() {
 
   const handleSaveDeposit = async () => {
     try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/deposit/update/${selectedRow.id}`,
-        {
-          tanggal_deposit: tanggalDeposit,
-          jumlah_deposit: jumlahDeposit,
-        }
-      );
+      let data = {
+        tanggal_deposit: tanggalDeposit,
+        jumlah_deposit: jumlahDeposit,
+      };
+
+      const response = await DepositService.update(selectedRow.id, data);
 
       handleCloseModal();
       fetchData();
-      SweatAlertTimer("Success!", "Deposit berhasil diubah", "success");
+      SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
       setOpenModal(false);
       console.error("Error updating deposit:", error);
-      SweatAlertTimer("Error!", "Gagal mengubah deposit", "error");
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 

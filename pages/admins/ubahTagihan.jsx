@@ -16,6 +16,7 @@ import { Grid } from "@mui/material";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import InputAdornment from "@mui/material/InputAdornment";
+import { TagihanService } from "@/services/tagihanService";
 
 export default function TagihanBulanan() {
   const [hargaTagihan, setHargaTagihan] = useState("");
@@ -65,9 +66,7 @@ export default function TagihanBulanan() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/tagihanBulanan/${tagihanDate}`
-      );
+      const response = await TagihanService.getByMonth(tagihanDate);
 
       const pelangganWithId = response.data.data.map((pelanggan, index) => ({
         id: index + 1,
@@ -106,34 +105,37 @@ export default function TagihanBulanan() {
 
   const handleDeleteClick = async (row) => {
     try {
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/tagihanBulanan/delete/${row}`
-      );
+      const response = await TagihanService.delete(row);
+
       fetchData();
-      SweatAlertTimer("Success!", "Tagihan berhasil dihapus", "success");
+      SweatAlertTimer("Success!", response.data.messange, "success");
     } catch (error) {
       console.error("Error deleting tagihan:", error);
-      SweatAlertTimer("Error!", "Gagal menghapus tagihan", "error");
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 
   const handleSaveTagihan = async () => {
     try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/tagihanBulanan/update/${selectedRow.idTagihan}`,
-        {
-          efektif_snack: efektif_snack,
-          efektif_makanSiang: efektif_makanSiang,
-        }
-      );
+      if (!efektif_snack || !efektif_makanSiang) {
+        SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
+        return;
+      }
+
+      let data = {
+        efektif_snack: efektif_snack,
+        efektif_makanSiang: efektif_makanSiang,
+      };
+
+      const response = await TagihanService.update(selectedRow.idTagihan, data);
 
       handleCloseModal();
       fetchData();
-      SweatAlertTimer("Success!", "Tagihan berhasil diubah", "success");
+      SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
       setOpenModal(false);
       console.error("Error updating tagihan:", error);
-      SweatAlertTimer("Error!", "Gagal mengubah tagihan", "error");
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 

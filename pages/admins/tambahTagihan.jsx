@@ -15,6 +15,10 @@ import { Grid } from "@mui/material";
 import theme from "@/config/theme";
 import InputAdornment from "@mui/material/InputAdornment";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
+import { PelangganService } from "@/services/pelangganService";
+import { TagihanService } from "@/services/tagihanService";
+import { Tag } from "@mui/icons-material";
+import { data } from "autoprefixer";
 
 export default function tambahTagihan() {
   const [efektif_snack, setefektif_snack] = useState("");
@@ -64,9 +68,7 @@ export default function tambahTagihan() {
 
   const fetchPelangganList = async () => {
     try {
-      const response = await axios.get(
-        process.env.NEXT_PUBLIC_API_URL + "/user"
-      );
+      const response = await PelangganService.getAll();
 
       const pelangganWithId = response.data.data.map((pelanggan, index) => ({
         ...pelanggan,
@@ -123,15 +125,15 @@ export default function tambahTagihan() {
         return;
       }
 
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/tagihanBulanan/create",
-        {
-          user_id: selectedPelanggan,
-          tanggal_tagihan: tagihanDate,
-          efektif_snack: parseInt(efektif_snack),
-          efektif_makanSiang: parseInt(efektif_makanSiang),
-        }
-      );
+      let data = {
+        user_id: selectedPelanggan,
+        tanggal_tagihan: tagihanDate,
+        efektif_snack: parseInt(efektif_snack),
+        efektif_makanSiang: parseInt(efektif_makanSiang),
+      };
+
+      const response = await TagihanService.create(data);
+
       SweatAlertTimer("Success!", response.data.message, "success");
     } catch (error) {
       handleCloseModal();
