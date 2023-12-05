@@ -25,7 +25,7 @@ export default function connection() {
   const router = useRouter();
 
   useEffect(() => {
-    const socket = io("http://localhost:8000");
+    const socket = io(process.env.NEXT_PUBLIC_API_URL);
     socket.on("qrCode", (receivedQrCode) => {
       setQrCode(receivedQrCode);
     });
