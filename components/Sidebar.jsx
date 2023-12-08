@@ -145,13 +145,13 @@ export default function Sidebar() {
               <FaMoneyBills />
             </ListItemIcon>
             <Link
-              href="/admins/tagihanBulanan"
+              href="/admins/fraktur"
               style={{
                 textDecoration: "none",
                 color: "inherit",
               }}
             >
-              <ListItemText primary="Tagihan Bulanan" />
+              <ListItemText primary="Fraktur" />
             </Link>
           </ListItemButton>
           <ListItemButton sx={{ pl: 4 }}>

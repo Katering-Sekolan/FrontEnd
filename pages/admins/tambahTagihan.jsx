@@ -52,10 +52,10 @@ export default function tambahTagihan() {
         />
       ),
     },
-    { field: "index", headerName: "ID", width: 100 },
+    { field: "index", headerName: "ID", width: 70 },
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
-    { field: "kelas", headerName: "Kelas", width: 250 },
+    { field: "kelas", headerName: "Kelas", width: 150 },
   ];
 
   useEffect(() => {
@@ -197,11 +197,7 @@ export default function tambahTagihan() {
               />
             </Grid>
           </Grid>
-          <DataGrid
-            rows={filteredTagihan.length > 0 ? filteredTagihan : pelangganList}
-            columns={columns}
-            pageSize={10}
-          />
+          <DataGrid rows={filteredTagihan} columns={columns} pageSize={10} />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box

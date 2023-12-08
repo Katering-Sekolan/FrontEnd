@@ -36,9 +36,9 @@ export default function Pelanggan() {
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "nomor_hp", headerName: "Nomor HP", width: 250 },
     { field: "nama", headerName: "Nama", width: 250 },
-    { field: "kelas", headerName: "Kelas", width: 250 },
+    { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
+    { field: "kelas", headerName: "Kelas", width: 150 },
     {
       field: "actions",
       headerName: "Actions",
@@ -309,11 +309,7 @@ export default function Pelanggan() {
             />
           </div>
 
-          <DataGrid
-            rows={filteredPelanggan.length > 0 ? filteredPelanggan : pelanggan}
-            columns={columns}
-            pageSize={10}
-          />
+          <DataGrid rows={filteredPelanggan} columns={columns} pageSize={10} />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box

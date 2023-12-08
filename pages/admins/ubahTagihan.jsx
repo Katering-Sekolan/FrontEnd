@@ -30,15 +30,17 @@ export default function TagihanBulanan() {
   const [searchInput, setSearchInput] = useState("");
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: "id", headerName: "ID", width: 70 },
     { field: "nama", headerName: "Nama", width: 250 },
-    { field: "noHP", headerName: "Nomor HP", width: 250 },
-    { field: "kelas", headerName: "Kelas", width: 250 },
-    { field: "total_tagihan", headerName: "Total Tagihan", width: 300 },
+    { field: "noHP", headerName: "Nomor HP", width: 200 },
+    { field: "kelas", headerName: "Kelas", width: 150 },
+    // { field: "efektif_snack", headerName: "Snack", width: 150 },
+    // { field: "efektif_makanSiang", headerName: "Makan Siang", width: 150 },
+    { field: "total_tagihan", headerName: "Total Tagihan", width: 250 },
     {
       field: "action",
       headerName: "Action",
-      width: 350,
+      width: 200,
       renderCell: (params) => (
         <div>
           <Button
@@ -75,9 +77,10 @@ export default function TagihanBulanan() {
         kelas: pelanggan.user_tagihan_bulanan.kelas,
         total_tagihan: `Rp. ${pelanggan.total_tagihan}`,
         noHP: pelanggan.user_tagihan_bulanan.nomor_hp,
-        efektif_snack: pelanggan.efektif_snack,
-        efektif_makanSiang: pelanggan.efektif_makanSiang,
+        efektif_snack: pelanggan.jumlah_snack,
+        efektif_makanSiang: pelanggan.jumlah_makanan,
       }));
+      console.log("pelangganWithId", pelangganWithId);
 
       setPelangganList(pelangganWithId);
     } catch (error) {
@@ -195,6 +198,7 @@ export default function TagihanBulanan() {
             </Grid>
           </Grid>
           <DataGrid rows={filteredTagihan} columns={columns} pageSize={10} />
+
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
               sx={{
