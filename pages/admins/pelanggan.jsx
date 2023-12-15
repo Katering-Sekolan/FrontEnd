@@ -20,6 +20,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import { PelangganService } from "@/services/pelangganService";
+import { WhatsAppService } from "@/services/whatsappService";
 
 export default function Pelanggan() {
   const [pelanggan, setPelanggan] = useState([]);
@@ -207,10 +208,13 @@ export default function Pelanggan() {
 
   const handleSendMessage = async () => {
     try {
-      const response = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/w/send-message",
-        { number, message }
-      );
+      let data = {
+        number: number,
+        message: message,
+      };
+
+      const response = await WhatsAppService.sendMessages(data);
+
       console.log(response.data);
       handleCloseModal();
       SweatAlertTimer("Success!", response.data.message, "success");
