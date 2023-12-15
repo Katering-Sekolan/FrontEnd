@@ -18,44 +18,47 @@ import {
   Chip,
 } from "@mui/material";
 import { PembayaranService } from "@/services/pembayaranService";
+import Script from "next/script";
+import SnapMidtransContainer from "@/components/SnapMidtransContainer";
+
+const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
 const steps = ["BELUM LUNAS", "PENDING", "DIBAYAR"];
 
 const PembayaranTagihan = () => {
-  const [activeStep, setActiveStep] = useState(0);
   const [billData, setBillData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
   const router = useRouter();
-  const { userId } = router.query;
+  const { userId, month } = router.query;
+
+  const fetchData = async (u) => {
+    try {
+      if (userId && month) {
+        const response = await PembayaranService.getByUserId(userId, month);
+        console.log("API Response:", response);
+
+        if (response && response.data) {
+          setBillData(response.data);
+        } else {
+          console.error("Invalid response structure:", response);
+          setBillData(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setBillData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (userId) {
-          const response = await PembayaranService.getByUserId(userId);
-          console.log("API Response:", response);
-
-          if (response && response.data) {
-            setBillData(response.data);
-          } else {
-            console.error("Invalid response structure:", response);
-            setBillData(null); // Set billData to null to indicate an issue
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setBillData(null); // Set billData to null to indicate an issue
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
-
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+    if (userId && month) {
+      fetchData();
+    }
+  }, [userId, month]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -72,7 +75,13 @@ const PembayaranTagihan = () => {
     }).format(amount);
   };
 
+  const handlePaymentSuccess = () => {
+    alert("Transaksi berhasil!");
+    setActiveStep(2);
+  };
+
   const {
+    id,
     status_pembayaran,
     tagihan_bulanan: {
       user_tagihan_bulanan: { nama, kelas, nomor_hp } = {},
@@ -81,12 +90,88 @@ const PembayaranTagihan = () => {
       total_snack,
       total_makanan,
       total_tagihan,
+      bulan,
     } = {},
-  } = billData[0] || {}; // ambildata pertams
+  } = billData[0] || {}; // ambil data pertama
 
   const formattedTotalTagihan = formatCurrency(total_tagihan);
   const formattedTotalMakanan = formatCurrency(total_makanan);
   const formattedTotalSnack = formatCurrency(total_snack);
+  const bulanTagihan = new Date(bulan);
+  const formattedBulanTagihan =
+    bulanTagihan instanceof Date && !isNaN(bulanTagihan)
+      ? new Intl.DateTimeFormat("id-ID", {
+          month: "long",
+          year: "numeric",
+        }).format(bulanTagihan)
+      : `Tidak ada data tagihan bulan ${bulan}`;
+
+  const createTransactionAndShowSnap = async () => {
+    try {
+      if (paymentInitiated) {
+        return;
+      }
+
+      setActiveStep(1);
+
+      const parameter = {
+        id_pembayaran: id,
+        total_tagihann: total_tagihan,
+        jumlah_makanan: jumlah_makanan,
+        jumlah_snack: jumlah_snack,
+        total_makanan: total_makanan,
+        total_snack: total_snack,
+        nama: nama,
+        nomor_hp: nomor_hp,
+        kelas: kelas,
+      };
+
+      // console.log("Transaction Details:", parameter);
+
+      const response = await PembayaranService.createTransaksi(parameter);
+      const transactionToken = response.data.token;
+      console.log("Transaction Token:", transactionToken);
+
+      if (window.snap && window.snap.embed) {
+        window.snap.embed(transactionToken, {
+          embedId: "snap-container",
+          onSuccess: function (result) {
+            alert("Transaksi berhasil!");
+            console.log("success", result);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          },
+          onPending: function (result) {
+            alert("Transaksi sedang diproses!");
+            console.log("pending", result);
+          },
+          onError: function (result) {
+            alert("Transaksi gagal!");
+            console.log("error", result);
+          },
+          onClose: function () {
+            alert("Anda menutup popup tanpa menyelesaikan pembayaran!");
+          },
+        });
+      } else {
+        console.error("Snap object or embed method not available.");
+      }
+    } catch (error) {
+      console.error("Error creating transaction:", error);
+      alert("Terjadi kesalahan saat membuat transaksi!");
+    } finally {
+      setPaymentInitiated(false);
+    }
+  };
+  // const handleNext = () => {
+  //   // Check if the payment is pending or successful before proceeding to the next step
+  //   if (activeStep === 1) {
+  //     // Trigger Snap popup only if the status is pending
+  //     createTransactionAndShowSnap();
+  //   } else {
+  //     // Proceed to the next step if not in the pending step
+  //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  //   }
+  // };
 
   const columns = ["Detail", "Jumlah", "Total Tagihan"];
   const rows = [
@@ -104,9 +189,9 @@ const PembayaranTagihan = () => {
     },
   ];
 
-  return (
+  const renderPaymentDetails = (handlePaymentClick, isPaymentInitiated) => (
     <Container>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         Pembayaran Tagihan
       </Typography>
 
@@ -158,6 +243,23 @@ const PembayaranTagihan = () => {
             }}
           >
             <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
+              Tagihan Bulan:
+            </Typography>
+            <Typography fontWeight="bold" color="#ff9a3c" variant="subtitle1">
+              {formattedBulanTagihan}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              backgroundColor: "#f5f5f5",
+              padding: 1,
+              marginBottom: 1,
+              borderRadius: 4,
+              justifyContent: "space-between",
+              display: "flex",
+            }}
+          >
+            <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
               Status Pembayaran:
             </Typography>
             <Chip
@@ -171,7 +273,6 @@ const PembayaranTagihan = () => {
               }
             />
           </Box>
-
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -216,19 +317,64 @@ const PembayaranTagihan = () => {
           </TableContainer>
         </Box>
       </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}>
-        <Button
-          variant="contained"
-          size="large"
-          color="primary"
-          onClick={handleNext}
-          sx={{ width: "100%", borderRadius: 4, height: "60px" }}
+      {status_pembayaran === "BELUM LUNAS" && (
+        <Box
+          sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}
         >
-          Bayar Sekarang
-        </Button>
-      </Box>
+          <Button
+            variant="contained"
+            size="large"
+            color="primary"
+            onClick={handlePaymentClick}
+            disabled={isPaymentInitiated}
+            sx={{ width: "100%", borderRadius: 4, height: "60px" }}
+          >
+            Bayar Sekarang
+          </Button>
+        </Box>
+      )}
     </Container>
+  );
+
+  const renderSnapEmbed = () => (
+    <Container>
+      <Box sx={{ marginBottom: 2 }}>
+        <Typography variant="h6">Status Pembayaran</Typography>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+
+      <div
+        sx={{
+          backgroundColor: "white",
+          padding: 2,
+          borderRadius: 4,
+          boxShadow: 1,
+        }}
+      >
+        <SnapMidtransContainer />
+      </div>
+    </Container>
+  );
+
+  return (
+    <>
+      <Script
+        src={`https://app.sandbox.midtrans.com/snap/snap.js`}
+        // strategy="beforeInteractive"
+        data-client-key={clientKey}
+        type="text/javascript"
+        onLoad={() => console.log("Snap script loaded")}
+      />
+      {activeStep === 1
+        ? renderSnapEmbed()
+        : renderPaymentDetails(createTransactionAndShowSnap, paymentInitiated)}
+    </>
   );
 };
 

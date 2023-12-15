@@ -79,12 +79,7 @@ export default function Header(props) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: "24px",
-              bgcolor: "secondary.main", // keep right padding when drawer closed
-            }}
-          >
+          <Toolbar sx={{ pr: "24px", bgcolor: "secondary.main" }}>
             <IconButton
               edge="start"
               color="inherit"
@@ -92,7 +87,7 @@ export default function Header(props) {
               onClick={toggleDrawer}
               sx={{
                 marginRight: "36px",
-                ...(open && { display: "none" }),
+                display: { sm: "none", md: "block" }, // Hide on small screens
               }}
             >
               <TiThMenuOutline color="white" />

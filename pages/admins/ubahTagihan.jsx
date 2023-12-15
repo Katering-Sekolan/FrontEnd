@@ -12,7 +12,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
-import { Grid } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -197,7 +197,16 @@ export default function TagihanBulanan() {
               />
             </Grid>
           </Grid>
-          <DataGrid rows={filteredTagihan} columns={columns} pageSize={10} />
+          <Paper style={{ width: "100%", overflowX: "auto" }}>
+            <div style={{ width: "100%" }}>
+              <DataGrid
+                rows={filteredTagihan}
+                columns={columns}
+                pageSize={10}
+                autoHeight
+              />
+            </div>
+          </Paper>
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box

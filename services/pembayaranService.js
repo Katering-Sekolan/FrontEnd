@@ -5,8 +5,8 @@ export const PembayaranService = {
         const response = await API.get("/pembayaran/getAll");
         return response;
     },
-    getByUserId: async (id) => {
-        const response = await API.get(`/userPembayaran/getByUserId/${id}`);
+    getByUserId: async (id, month) => {
+        const response = await API.get(`/prosesPembayaran/getByUserIdBulan/${id}/${month}`);
         return response;
     },
     getByMonth: async (month) => {
@@ -15,6 +15,10 @@ export const PembayaranService = {
     },
     create: async (data) => {
         const response = await API.post(`/pembayaran/create`, data);
+        return response;
+    },
+    createTransaksi: async (data) => {
+        const response = await API.post(`/userPembayaran/createTransaction`, data);
         return response;
     },
     update: async (id, data) => {
