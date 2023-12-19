@@ -22,8 +22,8 @@ import { TagihanService } from "@/services/tagihanService";
 
 export default function TagihanBulanan() {
   const [hargaTagihan, setHargaTagihan] = useState("");
-  const [efektifSnack, setEfektifSnack] = useState("");
-  const [efektifMakanSiang, setEfektifMakanSiang] = useState("");
+  const [efektif_snack, setEfektifSnack] = useState("");
+  const [efektif_makanSiang, setEfektifMakanSiang] = useState("");
   const [pelangganList, setPelangganList] = useState([]);
   const [tagihanDate, setTagihanDate] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -36,9 +36,9 @@ export default function TagihanBulanan() {
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "noHP", headerName: "Nomor HP", width: 200 },
     { field: "kelas", headerName: "Kelas", width: 150 },
-    { field: "efektifSnack", headerName: "Snack", width: 150 },
-    { field: "efektifMakanSiang", headerName: "Makan Siang", width: 150 },
-    { field: "totalTagihan", headerName: "Total Tagihan", width: 250 },
+    { field: "efektif_snack", headerName: "Snack", width: 150 },
+    { field: "efektif_makanSiang", headerName: "Makan Siang", width: 150 },
+    { field: "total_tagihan", headerName: "Total Tagihan", width: 250 },
     {
       field: "action",
       headerName: "Action",
@@ -82,6 +82,7 @@ export default function TagihanBulanan() {
         efektif_snack: pelanggan.jumlah_snack,
         efektif_makanSiang: pelanggan.jumlah_makanan,
       }));
+      console.log("pelangganWithId", pelangganWithId);
 
       setPelangganList(pelangganWithId);
     } catch (error) {
@@ -101,9 +102,9 @@ export default function TagihanBulanan() {
 
   const handleEditClick = (row) => {
     setSelectedRow(row);
-    setHargaTagihan(row.totalTagihan);
-    setEfektifSnack(row.efektifSnack);
-    setEfektifMakanSiang(row.efektifMakanSiang);
+    setHargaTagihan(row.total_tagihan);
+    setEfektifSnack(row.efektif_snack);
+    setEfektifMakanSiang(row.efektif_makanSiang);
     setOpenModal(true);
   };
 
@@ -121,14 +122,14 @@ export default function TagihanBulanan() {
 
   const handleSaveTagihan = async () => {
     try {
-      if (!efektifSnack || !efektifMakanSiang) {
+      if (!efektif_snack || !efektif_makanSiang) {
         SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
         return;
       }
 
       let data = {
-        efektifSnack: efektifSnack,
-        efektifMakanSiang: efektifMakanSiang,
+        efektif_snack: efektif_snack,
+        efektif_makanSiang: efektif_makanSiang,
       };
 
       const response = await TagihanService.update(selectedRow.idTagihan, data);
@@ -232,7 +233,7 @@ export default function TagihanBulanan() {
                     <TextField
                       label="Jumlah Snack"
                       type="number"
-                      value={efektifSnack}
+                      value={efektif_snack}
                       onChange={(e) => setEfektifSnack(e.target.value)}
                       fullWidth
                       margin="normal"
@@ -240,7 +241,7 @@ export default function TagihanBulanan() {
                     <TextField
                       label="Jumlah Makan Siang"
                       type="number"
-                      value={efektifMakanSiang}
+                      value={efektif_makanSiang}
                       onChange={(e) => setEfektifMakanSiang(e.target.value)}
                       fullWidth
                       margin="normal"

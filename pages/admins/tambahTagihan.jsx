@@ -1,160 +1,156 @@
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Container from "@mui/material/Container";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
+import Toolbar from "@mui/material/Toolbar";
+import Container from "@mui/material/Container";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import Header from "@/components/Header";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
-import { Grid, Paper } from "@mui/material";
+import { Grid } from "@mui/material";
 import theme from "@/config/theme";
-import SweatAlertTimer from "@/config/SweatAlert/timer";
 import InputAdornment from "@mui/material/InputAdornment";
+import SweatAlertTimer from "@/config/SweatAlert/timer";
+import { PelangganService } from "@/services/pelangganService";
 import { TagihanService } from "@/services/tagihanService";
+import { Tag } from "@mui/icons-material";
+import { data } from "autoprefixer";
 
-export default function TagihanBulanan() {
-  const [hargaTagihan, setHargaTagihan] = useState("");
-  const [efektif_snack, setEfektifSnack] = useState("");
-  const [efektif_makanSiang, setEfektifMakanSiang] = useState("");
+export default function tambahTagihan() {
+  const [efektif_snack, setefektif_snack] = useState("");
+  const [efektif_makanSiang, setefektif_maanSiang] = useState("");
+  const [selectedPelanggan, setSelectedPelanggan] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
   const [tagihanDate, setTagihanDate] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
   const [filteredTagihan, setFilteredTagihan] = useState([]);
   const [searchInput, setSearchInput] = useState("");
 
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "nama", headerName: "Nama", width: 250 },
-    { field: "noHP", headerName: "Nomor HP", width: 200 },
-    { field: "kelas", headerName: "Kelas", width: 150 },
-    { field: "efektif_snack", headerName: "Snack", width: 150 },
-    { field: "efektif_makanSiang", headerName: "Makan Siang", width: 150 },
-    { field: "total_tagihan", headerName: "Total Tagihan", width: 250 },
     {
-      field: "action",
-      headerName: "Action",
-      width: 250,
+      field: "select",
+      headerName: "Select",
+      width: 100,
+      renderHeader: (params) => (
+        <Checkbox
+          indeterminate={
+            selectedPelanggan.length > 0 &&
+            selectedPelanggan.length < pelangganList.length
+          }
+          checked={selectedPelanggan.length === pelangganList.length}
+          onChange={handleSelectAllCheckboxChange}
+        />
+      ),
       renderCell: (params) => (
-        <Container>
-          <Button
-            variant="contained"
-            size="small"
-            startIcon={<EditIcon />}
-            sx={{ marginRight: 1 }}
-            onClick={() => handleEditClick(params.row)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => handleDeleteClick(params.row.idTagihan)}
-          >
-            Hapus
-          </Button>
-        </Container>
+        <Checkbox
+          checked={selectedPelanggan.includes(params.row.id)}
+          onChange={() => handleCheckboxChange(params.row.id)}
+        />
       ),
     },
+    { field: "index", headerName: "ID", width: 70 },
+    { field: "nama", headerName: "Nama", width: 250 },
+    { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
+    { field: "kelas", headerName: "Kelas", width: 150 },
   ];
 
-  const fetchData = async () => {
-    try {
-      const response = await TagihanService.getByMonth(tagihanDate);
-
-      const pelangganWithId = response.data.data.map((pelanggan, index) => ({
-        id: index + 1,
-        idTagihan: pelanggan.id,
-        nama: pelanggan.user_tagihan_bulanan.nama,
-        kelas: pelanggan.user_tagihan_bulanan.kelas,
-        total_tagihan: `Rp. ${pelanggan.total_tagihan}`,
-        noHP: pelanggan.user_tagihan_bulanan.nomor_hp,
-        efektif_snack: pelanggan.jumlah_snack,
-        efektif_makanSiang: pelanggan.jumlah_makanan,
-      }));
-      console.log("pelangganWithId", pelangganWithId);
-
-      setPelangganList(pelangganWithId);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   useEffect(() => {
-    if (tagihanDate) {
-      fetchData();
-    }
-  }, [tagihanDate]);
+    fetchPelangganList();
+  }, []);
 
   useEffect(() => {
     search();
   }, [searchInput, pelangganList]);
 
-  const handleEditClick = (row) => {
-    setSelectedRow(row);
-    setHargaTagihan(row.total_tagihan);
-    setEfektifSnack(row.efektif_snack);
-    setEfektifMakanSiang(row.efektif_makanSiang);
+  const fetchPelangganList = async () => {
+    try {
+      const response = await PelangganService.getAll();
+
+      const pelangganWithId = response.data.data.map((pelanggan, index) => ({
+        ...pelanggan,
+        id: pelanggan.id,
+        index: index + 1,
+      }));
+      setPelangganList(pelangganWithId);
+    } catch (error) {
+      console.error("Error fetching pelanggan:", error);
+    }
+  };
+
+  const handleCheckboxChange = (pelangganId) => {
+    if (selectedPelanggan.includes(pelangganId)) {
+      setSelectedPelanggan(
+        selectedPelanggan.filter((id) => id !== pelangganId)
+      );
+    } else {
+      setSelectedPelanggan([...selectedPelanggan, pelangganId]);
+    }
+  };
+
+  const handleSelectAllCheckboxChange = (event) => {
+    if (event.target.checked) {
+      const allPelangganIds = pelangganList.map((pelanggan) => pelanggan.id);
+      setSelectedPelanggan(allPelangganIds);
+    } else {
+      setSelectedPelanggan([]);
+    }
+  };
+
+  const handleOpenModal = () => {
+    if (!tagihanDate || selectedPelanggan.length === 0) {
+      SweatAlertTimer(
+        "Error!",
+        "Harap pilih tanggal dan pilih pelanggan terlebih dahulu!",
+        "error"
+      );
+      return;
+    }
+
     setOpenModal(true);
-  };
-
-  const handleDeleteClick = async (row) => {
-    try {
-      const response = await TagihanService.delete(row);
-
-      fetchData();
-      SweatAlertTimer("Success!", response.data.messange, "success");
-    } catch (error) {
-      console.error("Error deleting tagihan:", error);
-      SweatAlertTimer("Error!", error.response.data.message, "error");
-    }
-  };
-
-  const handleSaveTagihan = async () => {
-    try {
-      if (!efektif_snack || !efektif_makanSiang) {
-        SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
-        return;
-      }
-
-      let data = {
-        efektif_snack: efektif_snack,
-        efektif_makanSiang: efektif_makanSiang,
-      };
-
-      const response = await TagihanService.update(selectedRow.idTagihan, data);
-
-      handleCloseModal();
-      fetchData();
-      SweatAlertTimer("Success!", response.data.message, "success");
-    } catch (error) {
-      setOpenModal(false);
-      console.error("Error updating tagihan:", error);
-      SweatAlertTimer("Error!", error.response.data.message, "error");
-    }
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
   };
 
+  const handleSaveTagihan = async () => {
+    try {
+      handleCloseModal();
+      if (!efektif_snack || selectedPelanggan.length === 0) {
+        SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
+        return;
+      }
+
+      let data = {
+        user_id: selectedPelanggan,
+        tanggal_tagihan: tagihanDate,
+        efektif_snack: parseInt(efektif_snack),
+        efektif_makanSiang: parseInt(efektif_makanSiang),
+      };
+
+      const response = await TagihanService.create(data);
+
+      SweatAlertTimer("Success!", response.data.message, "success");
+    } catch (error) {
+      handleCloseModal();
+      SweatAlertTimer("Error!", error.response.data.message, "error");
+    }
+  };
+
   const search = () => {
     const filteredData = pelangganList.filter(
       (pelanggan) =>
         pelanggan.nama.toLowerCase().includes(searchInput.toLowerCase()) ||
-        pelanggan.noHP.toString().includes(searchInput) ||
-        pelanggan.kelas.toLowerCase().includes(searchInput.toLowerCase())
+        pelanggan.kelas.toLowerCase().includes(searchInput.toLowerCase()) ||
+        pelanggan.nomor_hp.toString().includes(searchInput.toLowerCase())
     );
+
     setFilteredTagihan(filteredData);
   };
 
@@ -162,14 +158,11 @@ export default function TagihanBulanan() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Ubah Tagihan Katering Qita" />
+        <Header navName="Tambah Tagihan Katering Qita" />
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: (theme) => theme.palette.grey[100],
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",
@@ -188,12 +181,16 @@ export default function TagihanBulanan() {
               <TextField
                 label="Tanggal Tagihan"
                 type="month"
+                style={{ marginRight: "8px" }}
                 onChange={(e) => setTagihanDate(e.target.value)}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 size="small"
               />
+              <Button variant="contained" onClick={handleOpenModal}>
+                Tambah Tagihan
+              </Button>
             </Grid>
             <Grid item>
               <TextField
@@ -206,13 +203,7 @@ export default function TagihanBulanan() {
               />
             </Grid>
           </Grid>
-
-          <DataGrid
-            rows={filteredTagihan}
-            columns={columns}
-            pageSize={10}
-            autoHeight
-          />
+          <DataGrid rows={filteredTagihan} columns={columns} pageSize={10} />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
@@ -223,26 +214,26 @@ export default function TagihanBulanan() {
                 transform: "translate(-50%, -50%)",
                 bgcolor: "white",
                 boxShadow: 24,
-                p: 4,
+                padding: 4,
               }}
             >
-              <h2>Edit Tagihan</h2>
+              <h2>Tambah Tagihan</h2>
               <Container>
-                {selectedRow && (
+                {tagihanDate && (
                   <>
                     <TextField
-                      label="Jumlah Snack"
+                      label="Jumalah Snack"
                       type="number"
                       value={efektif_snack}
-                      onChange={(e) => setEfektifSnack(e.target.value)}
+                      onChange={(e) => setefektif_snack(e.target.value)}
                       fullWidth
                       margin="normal"
                     />
                     <TextField
-                      label="Jumlah Makan Siang"
+                      label="Jumalah Makan Siang"
                       type="number"
                       value={efektif_makanSiang}
-                      onChange={(e) => setEfektifMakanSiang(e.target.value)}
+                      onChange={(e) => setefektif_maanSiang(e.target.value)}
                       fullWidth
                       margin="normal"
                     />
