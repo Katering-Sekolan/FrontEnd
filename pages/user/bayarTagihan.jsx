@@ -23,7 +23,7 @@ import SnapMidtransContainer from "@/components/SnapMidtransContainer";
 
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
-const steps = ["BELUM LUNAS", "PENDING", "DIBAYAR"];
+const steps = ["MENUNGGU PEMBAYARAN", "PROSES PEMBAYRAN", "PEMBAYARAN SELESAI"];
 
 const PembayaranTagihan = () => {
   const [billData, setBillData] = useState(null);
@@ -162,16 +162,6 @@ const PembayaranTagihan = () => {
       setPaymentInitiated(false);
     }
   };
-  // const handleNext = () => {
-  //   // Check if the payment is pending or successful before proceeding to the next step
-  //   if (activeStep === 1) {
-  //     // Trigger Snap popup only if the status is pending
-  //     createTransactionAndShowSnap();
-  //   } else {
-  //     // Proceed to the next step if not in the pending step
-  //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  //   }
-  // };
 
   const columns = ["Detail", "Jumlah", "Total Tagihan"];
   const rows = [
@@ -189,14 +179,18 @@ const PembayaranTagihan = () => {
     },
   ];
 
-  const renderPaymentDetails = (handlePaymentClick, isPaymentInitiated) => (
-    <Container>
-      <Typography variant="h5" gutterBottom>
-        Pembayaran Tagihan
-      </Typography>
-
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="h6">Status Pembayaran</Typography>
+  const PaymentStatusStepper = ({ activeStep, steps }) => {
+    return (
+      <Box
+        sx={{
+          marginBottom: 2,
+          backgroundColor: "white",
+          padding: 2,
+          borderRadius: 4,
+          boxShadow: 1,
+        }}
+      >
+        <Typography variant="h6">Status Proses Pembayaran</Typography>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((label) => (
             <Step key={label}>
@@ -205,150 +199,153 @@ const PembayaranTagihan = () => {
           ))}
         </Stepper>
       </Box>
+    );
+  };
 
-      <Box sx={{ marginBottom: 2 }}>
-        <Box
-          sx={{
-            backgroundColor: "white",
-            padding: 2,
-            borderRadius: 4,
-            boxShadow: 1,
-          }}
-        >
-          <Typography variant="h6">Detail Pengguna</Typography>
-          <Typography>Nama: {nama}</Typography>
-          <Typography>No HP: {nomor_hp}</Typography>
-          <Typography>Kelas: {kelas}</Typography>
+  const renderPaymentDetails = (handlePaymentClick, isPaymentInitiated) => {
+    const customActiveStep = status_pembayaran === "BELUM LUNAS" ? 0 : 2;
+    return (
+      <Container>
+        <Typography variant="h5" gutterBottom>
+          Pembayaran Tagihan
+        </Typography>
+
+        <PaymentStatusStepper activeStep={customActiveStep} steps={steps} />
+
+        <Box sx={{ marginBottom: 2 }}>
+          <Box
+            sx={{
+              backgroundColor: "white",
+              padding: 2,
+              borderRadius: 4,
+              boxShadow: 1,
+            }}
+          >
+            <Typography variant="h6">Detail Pengguna</Typography>
+            <Typography>Nama: {nama}</Typography>
+            <Typography>No HP: {nomor_hp}</Typography>
+            <Typography>Kelas: {kelas}</Typography>
+          </Box>
         </Box>
-      </Box>
 
-      <Box sx={{ marginBottom: 2 }}>
-        <Box
-          sx={{
-            backgroundColor: "white",
-            padding: 2,
-            borderRadius: 4,
-            boxShadow: 1,
-          }}
-        >
-          <Typography variant="h6">Detail Tagihan</Typography>
+        <Box sx={{ marginBottom: 2 }}>
           <Box
             sx={{
-              backgroundColor: "#f5f5f5",
-              padding: 1,
-              marginBottom: 1,
+              backgroundColor: "white",
+              padding: 2,
               borderRadius: 4,
-              justifyContent: "space-between",
-              display: "flex",
+              boxShadow: 1,
             }}
           >
-            <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
-              Tagihan Bulan:
-            </Typography>
-            <Typography fontWeight="bold" color="#ff9a3c" variant="subtitle1">
-              {formattedBulanTagihan}
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              padding: 1,
-              marginBottom: 1,
-              borderRadius: 4,
-              justifyContent: "space-between",
-              display: "flex",
-            }}
-          >
-            <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
-              Status Pembayaran:
-            </Typography>
-            <Chip
-              label={status_pembayaran}
-              color={
-                status_pembayaran === "LUNAS"
-                  ? "success"
-                  : status_pembayaran === "PENDING"
-                  ? "warning"
-                  : "error"
-              }
-            />
-          </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column}
-                      sx={{
-                        backgroundColor: "#f5f5f5",
-                        fontWeight: "bold",
-                        color: "#333",
-                      }}
-                    >
-                      {column}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell
-                      sx={{
-                        fontWeight: row.isBold ? "bold" : "normal",
-                      }}
-                    >
-                      {row.nama}
-                    </TableCell>
-                    <TableCell>{row.jumlah}</TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: row.isBold ? "bold" : "normal",
-                        color: row.isBold ? "#ff9a3c" : "#000",
-                      }}
-                    >
-                      {row.total}
-                    </TableCell>
+            <Typography variant="h6">Detail Tagihan</Typography>
+            <Box
+              sx={{
+                backgroundColor: "#f5f5f5",
+                padding: 1,
+                marginBottom: 1,
+                borderRadius: 2,
+                justifyContent: "space-between",
+                display: "flex",
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
+                Tagihan Bulan:
+              </Typography>
+              <Typography fontWeight="bold" color="#ff9a3c" variant="subtitle1">
+                {formattedBulanTagihan}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                backgroundColor: "#f5f5f5",
+                padding: 1,
+                marginBottom: 1,
+                borderRadius: 2,
+                justifyContent: "space-between",
+                display: "flex",
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
+                Status Pembayaran:
+              </Typography>
+              <Chip
+                label={status_pembayaran}
+                color={
+                  status_pembayaran === "LUNAS"
+                    ? "success"
+                    : status_pembayaran === "PENDING"
+                    ? "warning"
+                    : "error"
+                }
+              />
+            </Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {columns.map((column) => (
+                      <TableCell
+                        key={column}
+                        sx={{
+                          backgroundColor: "#f5f5f5",
+                          fontWeight: "bold",
+                          color: "#333",
+                        }}
+                      >
+                        {column}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        sx={{
+                          fontWeight: row.isBold ? "bold" : "normal",
+                        }}
+                      >
+                        {row.nama}
+                      </TableCell>
+                      <TableCell>{row.jumlah}</TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: row.isBold ? "bold" : "normal",
+                          color: row.isBold ? "#ff9a3c" : "#000",
+                        }}
+                      >
+                        {row.total}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
-      </Box>
-      {status_pembayaran === "BELUM LUNAS" && (
-        <Box
-          sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}
-        >
-          <Button
-            variant="contained"
-            size="large"
-            color="primary"
-            onClick={handlePaymentClick}
-            disabled={isPaymentInitiated}
-            sx={{ width: "100%", borderRadius: 4, height: "60px" }}
+        {status_pembayaran === "BELUM LUNAS" && (
+          <Box
+            sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}
           >
-            Bayar Sekarang
-          </Button>
-        </Box>
-      )}
-    </Container>
-  );
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              onClick={handlePaymentClick}
+              disabled={isPaymentInitiated}
+              sx={{ width: "100%", borderRadius: 4, height: "60px" }}
+            >
+              Bayar Sekarang
+            </Button>
+          </Box>
+        )}
+      </Container>
+    );
+  };
 
   const renderSnapEmbed = () => (
     <Container>
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="h6">Status Pembayaran</Typography>
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
-
+      <PaymentStatusStepper activeStep={activeStep} steps={steps} />
       <div
         sx={{
           backgroundColor: "white",

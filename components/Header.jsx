@@ -1,7 +1,6 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { styled, ThemeProvider } from "@mui/material/styles";
 import theme from "@/config/theme";
-
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -65,8 +64,8 @@ const Drawer = styled(MuiDrawer, {
 
 export default function Header(props) {
   const { navName } = props;
+  const [open, setOpen] = useState(true);
 
-  const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -79,7 +78,7 @@ export default function Header(props) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppBar position="absolute" open={open}>
-          <Toolbar sx={{ pr: "24px", bgcolor: "secondary.main" }}>
+          <Toolbar sx={{ pr: "24px", bgcolor: theme.palette.secondary.main }}>
             <IconButton
               edge="start"
               color="inherit"

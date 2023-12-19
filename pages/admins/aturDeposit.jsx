@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
@@ -35,7 +37,7 @@ export default function DepositManagement() {
       headerName: "Action",
       flex: 1,
       renderCell: (params) => (
-        <div>
+        <Container>
           <Button
             variant="contained"
             size="small"
@@ -43,7 +45,7 @@ export default function DepositManagement() {
           >
             Edit
           </Button>
-        </div>
+        </Container>
       ),
     },
   ];
@@ -124,16 +126,25 @@ export default function DepositManagement() {
         <CssBaseline />
         <Header navName="Atur Deposit Pelanggan" />
         <Box
+          component="main"
           sx={{
-            marginTop: 8,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
             flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
             padding: 2,
           }}
         >
+          <Toolbar />
           <Grid
             container
-            justifyContent="flex-end"
-            style={{ marginBottom: "8px" }}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            marginBottom="8px"
           >
             <TextField
               label="cari Nama, Nomor HP, atau Kelas"
@@ -144,11 +155,7 @@ export default function DepositManagement() {
               style={{ width: "300px" }}
             />
           </Grid>
-          <DataGrid
-            rows={filteredDeposits.length > 0 ? filteredDeposits : deposits}
-            columns={columns}
-            pageSize={10}
-          />
+          <DataGrid rows={filteredDeposits} columns={columns} pageSize={10} />
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
               sx={{
@@ -162,7 +169,7 @@ export default function DepositManagement() {
               }}
             >
               <h2>Edit Deposit</h2>
-              <div>
+              <Container>
                 {selectedRow && (
                   <>
                     <TextField
@@ -186,7 +193,7 @@ export default function DepositManagement() {
                     </Button>
                   </>
                 )}
-              </div>
+              </Container>
             </Box>
           </Modal>
         </Box>

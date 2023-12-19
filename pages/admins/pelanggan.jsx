@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Grid, Paper } from "@mui/material";
+import Container from "@mui/material/Container";
+import Toolbar from "@mui/material/Toolbar";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -286,19 +289,25 @@ export default function Pelanggan() {
         <CssBaseline />
         <Header navName="Pelanggan Katering Qita" />
         <Box
+          component="main"
           sx={{
-            marginTop: 8,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
             flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
             padding: 2,
           }}
         >
-          <div
-            style={{
-              marginBottom: "8px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
+          <Toolbar />
+          <Grid
+            container
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            marginBottom="8px"
           >
             <Button variant="contained" onClick={handleOpenModal}>
               Tambah Pelanggan
@@ -311,7 +320,7 @@ export default function Pelanggan() {
               size="small"
               style={{ width: "300px" }}
             />
-          </div>
+          </Grid>
 
           <DataGrid rows={filteredPelanggan} columns={columns} pageSize={10} />
 
@@ -330,7 +339,7 @@ export default function Pelanggan() {
               <h2>
                 {editingPelanggan ? "Edit Pelanggan" : "Tambah Pelanggan"}
               </h2>
-              <div>
+              <Container>
                 <TextField
                   label="Nama"
                   name="nama"
@@ -377,7 +386,7 @@ export default function Pelanggan() {
                 >
                   {editingPelanggan ? "Update" : "Simpan"}
                 </Button>
-              </div>
+              </Container>
             </Box>
           </Modal>
 
@@ -394,7 +403,7 @@ export default function Pelanggan() {
               }}
             >
               <h2>Kirim pesan whatsapp</h2>
-              <div>
+              <Container>
                 <TextField
                   label="No Hp."
                   name="number"
@@ -419,7 +428,7 @@ export default function Pelanggan() {
                 >
                   Kirim
                 </Button>
-              </div>
+              </Container>
             </Box>
           </Modal>
         </Box>

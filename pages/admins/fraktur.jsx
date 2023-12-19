@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
+import Toolbar from "@mui/material";
+import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Header from "@/components/Header";
 import Box from "@mui/material/Box";
@@ -143,12 +145,19 @@ export default function MonthlyPayment() {
         <CssBaseline />
         <Header navName="Fraktur Pembayaran Bulanan" />
         <Box
+          component="main"
           sx={{
-            marginTop: 8,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
             flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
             padding: 2,
           }}
         >
+          <Toolbar />
           <Grid
             container
             marginBottom="8px"
@@ -156,7 +165,7 @@ export default function MonthlyPayment() {
             justifyContent="space-between"
             alignItems="center"
           >
-            <div item>
+            <Container item>
               <TextField
                 label="Tanggal Pembayaran"
                 type="month"
@@ -170,7 +179,7 @@ export default function MonthlyPayment() {
               <Button variant="contained" onClick={handleOpenModal}>
                 Update Pembayaran
               </Button>
-            </div>
+            </Container>
           </Grid>
           <DataGrid
             rows={monthlyPayments}
@@ -195,7 +204,7 @@ export default function MonthlyPayment() {
               }}
             >
               <h2>Update Pembayaran</h2>
-              <div>
+              <Container>
                 {paymentDate && (
                   <>
                     <TextField
@@ -224,7 +233,7 @@ export default function MonthlyPayment() {
                     </Button>
                   </>
                 )}
-              </div>
+              </Container>
             </Box>
           </Modal>
         </Box>

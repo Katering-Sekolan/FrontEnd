@@ -1,13 +1,15 @@
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import Container from "@mui/material/Container";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import Header from "@/components/Header";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -20,8 +22,8 @@ import { TagihanService } from "@/services/tagihanService";
 
 export default function TagihanBulanan() {
   const [hargaTagihan, setHargaTagihan] = useState("");
-  const [efektif_snack, setEfektifSnack] = useState("");
-  const [efektif_makanSiang, setEfektifMakanSiang] = useState("");
+  const [efektifSnack, setEfektifSnack] = useState("");
+  const [efektifMakanSiang, setEfektifMakanSiang] = useState("");
   const [pelangganList, setPelangganList] = useState([]);
   const [tagihanDate, setTagihanDate] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -34,15 +36,15 @@ export default function TagihanBulanan() {
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "noHP", headerName: "Nomor HP", width: 200 },
     { field: "kelas", headerName: "Kelas", width: 150 },
-    // { field: "efektif_snack", headerName: "Snack", width: 150 },
-    // { field: "efektif_makanSiang", headerName: "Makan Siang", width: 150 },
-    { field: "total_tagihan", headerName: "Total Tagihan", width: 250 },
+    { field: "efektifSnack", headerName: "Snack", width: 150 },
+    { field: "efektifMakanSiang", headerName: "Makan Siang", width: 150 },
+    { field: "totalTagihan", headerName: "Total Tagihan", width: 250 },
     {
       field: "action",
       headerName: "Action",
-      width: 200,
+      width: 250,
       renderCell: (params) => (
-        <div>
+        <Container>
           <Button
             variant="contained"
             size="small"
@@ -61,7 +63,7 @@ export default function TagihanBulanan() {
           >
             Hapus
           </Button>
-        </div>
+        </Container>
       ),
     },
   ];
@@ -80,7 +82,6 @@ export default function TagihanBulanan() {
         efektif_snack: pelanggan.jumlah_snack,
         efektif_makanSiang: pelanggan.jumlah_makanan,
       }));
-      console.log("pelangganWithId", pelangganWithId);
 
       setPelangganList(pelangganWithId);
     } catch (error) {
@@ -100,9 +101,9 @@ export default function TagihanBulanan() {
 
   const handleEditClick = (row) => {
     setSelectedRow(row);
-    setHargaTagihan(row.total_tagihan);
-    setEfektifSnack(row.efektif_snack);
-    setEfektifMakanSiang(row.efektif_makanSiang);
+    setHargaTagihan(row.totalTagihan);
+    setEfektifSnack(row.efektifSnack);
+    setEfektifMakanSiang(row.efektifMakanSiang);
     setOpenModal(true);
   };
 
@@ -120,14 +121,14 @@ export default function TagihanBulanan() {
 
   const handleSaveTagihan = async () => {
     try {
-      if (!efektif_snack || !efektif_makanSiang) {
+      if (!efektifSnack || !efektifMakanSiang) {
         SweatAlertTimer("Error!", "Harap isi semua bidang", "error");
         return;
       }
 
       let data = {
-        efektif_snack: efektif_snack,
-        efektif_makanSiang: efektif_makanSiang,
+        efektifSnack: efektifSnack,
+        efektifMakanSiang: efektifMakanSiang,
       };
 
       const response = await TagihanService.update(selectedRow.idTagihan, data);
@@ -162,17 +163,25 @@ export default function TagihanBulanan() {
         <CssBaseline />
         <Header navName="Ubah Tagihan Katering Qita" />
         <Box
+          component="main"
           sx={{
-            marginTop: 6,
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
             flexGrow: 1,
+            height: "100vh",
+            overflow: "auto",
             padding: 2,
           }}
         >
+          <Toolbar />
           <Grid
             container
             direction="row"
             justifyContent="space-between"
             alignItems="center"
+            marginBottom="8px"
           >
             <Grid item>
               <TextField
@@ -182,7 +191,6 @@ export default function TagihanBulanan() {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                margin="normal"
                 size="small"
               />
             </Grid>
@@ -197,16 +205,13 @@ export default function TagihanBulanan() {
               />
             </Grid>
           </Grid>
-          <Paper style={{ width: "100%", overflowX: "auto" }}>
-            <div style={{ width: "100%" }}>
-              <DataGrid
-                rows={filteredTagihan}
-                columns={columns}
-                pageSize={10}
-                autoHeight
-              />
-            </div>
-          </Paper>
+
+          <DataGrid
+            rows={filteredTagihan}
+            columns={columns}
+            pageSize={10}
+            autoHeight
+          />
 
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
@@ -221,13 +226,13 @@ export default function TagihanBulanan() {
               }}
             >
               <h2>Edit Tagihan</h2>
-              <div>
+              <Container>
                 {selectedRow && (
                   <>
                     <TextField
                       label="Jumlah Snack"
                       type="number"
-                      value={efektif_snack}
+                      value={efektifSnack}
                       onChange={(e) => setEfektifSnack(e.target.value)}
                       fullWidth
                       margin="normal"
@@ -235,7 +240,7 @@ export default function TagihanBulanan() {
                     <TextField
                       label="Jumlah Makan Siang"
                       type="number"
-                      value={efektif_makanSiang}
+                      value={efektifMakanSiang}
                       onChange={(e) => setEfektifMakanSiang(e.target.value)}
                       fullWidth
                       margin="normal"
@@ -250,7 +255,7 @@ export default function TagihanBulanan() {
                     </Button>
                   </>
                 )}
-              </div>
+              </Container>
             </Box>
           </Modal>
         </Box>

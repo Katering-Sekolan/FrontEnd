@@ -23,9 +23,69 @@ import {
   FaMoneyBillTransfer,
   FaMoneyCheck,
 } from "react-icons/fa6";
-import { BsClipboard2Plus } from "react-icons/bs";
 import { LuClipboardEdit } from "react-icons/lu";
+import { BsClipboard2Plus } from "react-icons/bs";
 import { signOut } from "next-auth/react";
+import Divider from "@mui/material/Divider";
+
+const menuItems = [
+  {
+    icon: <AiOutlineDashboard size={"25px"} />,
+    text: "Dashboard",
+    link: "/admins/dashboard",
+  },
+  {
+    icon: <FaUsers size={"25px"} />,
+    text: "Pelanggan",
+    link: "/admins/pelanggan",
+  },
+  {
+    icon: <FaClipboardList size={"25px"} />,
+    text: "Tagihan",
+    link: "/admins/tagihan",
+    dropdown: true,
+    submenu: [
+      {
+        icon: <BsClipboard2Plus />,
+        text: "Tambah Tagihan",
+        link: "/admins/tambahTagihan",
+      },
+      {
+        icon: <LuClipboardEdit />,
+        text: "Ubah Tagihan",
+        link: "/admins/ubahTagihan",
+      },
+      { icon: <FaMoneyCheck />, text: "Deposit", link: "/admins/aturDeposit" },
+    ],
+  },
+  {
+    icon: <FaMoneyBill size={"25px"} />,
+    text: "Pembayaran",
+    link: "/admins/pembayaran",
+    dropdown: true,
+    submenu: [
+      { icon: <FaMoneyBills />, text: "Fraktur", link: "/admins/fraktur" },
+      {
+        icon: <FaMoneyBillTransfer />,
+        text: "Riwayat Pembayaran",
+        link: "/admins/riwayatPembayaran",
+      },
+    ],
+  },
+  {
+    icon: <FaRegCommentDots size={"25px"} />,
+    text: "Whatsapp",
+    link: "/admins/whatsapp",
+    dropdown: true,
+    submenu: [
+      { icon: <FaForumbee />, text: "Koneksi", link: "/admins/WG/connection" },
+      { icon: <FaPerson />, text: "Send Private", link: "/" },
+      { icon: <FaPeopleGroup />, text: "Send Group", link: "/" },
+      { icon: <FaTeamspeak />, text: "Broadcast", link: "/" },
+    ],
+  },
+ 
+];
 
 export default function Sidebar() {
   const router = useRouter();
@@ -50,199 +110,61 @@ export default function Sidebar() {
 
   return (
     <>
-      <ListItemButton>
-        <ListItemIcon>
-          <AiOutlineDashboard size={"25px"} />
-        </ListItemIcon>
-        <Link
-          href="/admins/dashboard"
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-          }}
-        >
-          <ListItemText primary="Dashboard" />
-        </Link>
-      </ListItemButton>
-      <ListItemButton>
-        <ListItemIcon>
-          <FaUsers size={"25px"} />
-        </ListItemIcon>
-        <Link
-          href="/admins/pelanggan"
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-          }}
-        >
-          <ListItemText primary="Pelanggan" />
-        </Link>
-      </ListItemButton>
-      <ListItemButton onClick={() => handleClick("tagihan")}>
-        <ListItemIcon>
-          <FaClipboardList size={"25px"} />
-        </ListItemIcon>
-        <ListItemText primary="Tagihan" />
-        {open.tagihan ? <MdExpandLess /> : <MdOutlineExpandMore />}
-      </ListItemButton>
-      <Collapse in={open.tagihan} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <BsClipboard2Plus />
-            </ListItemIcon>
-            <Link
-              href="/admins/tambahTagihan"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
+      {menuItems.map((item) => (
+        <React.Fragment key={item.text}>
+          {item.dropdown ? (
+            <ListItemButton
+              onClick={() => handleClick(item.text.toLowerCase())}
             >
-              <ListItemText primary="Tambah Tagihan" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <LuClipboardEdit />
-            </ListItemIcon>
-            <Link
-              href="/admins/ubahTagihan"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+              {open[item.text.toLowerCase()] ? (
+                <MdExpandLess />
+              ) : (
+                <MdOutlineExpandMore />
+              )}
+            </ListItemButton>
+          ) : (
+            <ListItemButton selected={router.pathname === item.link}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <Link
+                href={item.link}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <ListItemText primary={item.text} />
+              </Link>
+            </ListItemButton>
+          )}
+          {item.dropdown && item.submenu && (
+            <Collapse
+              in={open[item.text.toLowerCase()]}
+              timeout="auto"
+              unmountOnExit
+              key={`collapse-${item.text}`}
             >
-              <ListItemText primary="Ubah Tagihan" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaMoneyCheck />
-            </ListItemIcon>
-            <Link
-              href="/admins/aturDeposit"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Deposit" />
-            </Link>
-          </ListItemButton>
-        </List>
-      </Collapse>
-      <ListItemButton onClick={() => handleClick("pembayaran")}>
-        <ListItemIcon>
-          <FaMoneyBill size={"25px"} />
-        </ListItemIcon>
-        <ListItemText primary="Pembayaran" />
-        {open.pembayaran ? <MdExpandLess /> : <MdOutlineExpandMore />}
-      </ListItemButton>
-      <Collapse in={open.pembayaran} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaMoneyBills />
-            </ListItemIcon>
-            <Link
-              href="/admins/fraktur"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Fraktur" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaMoneyBillTransfer />
-            </ListItemIcon>
-            <Link
-              href="/admins/riwayatPembayaran"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Riwayat Pembayaran" />
-            </Link>
-          </ListItemButton>
-        </List>
-      </Collapse>
-      <ListItemButton onClick={() => handleClick("whatsapp")}>
-        <ListItemIcon>
-          <FaRegCommentDots size={"25px"} />
-        </ListItemIcon>
-        <ListItemText primary="Whatsapp" />
-        {open.whatsapp ? <MdExpandLess /> : <MdOutlineExpandMore />}
-      </ListItemButton>
-      <Collapse in={open.whatsapp} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaForumbee />
-            </ListItemIcon>
-            <Link
-              href="/admins/WG/connection"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Koneksi" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaPerson />
-            </ListItemIcon>
-            <Link
-              href="/"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Send Private" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaPeopleGroup />
-            </ListItemIcon>
-            <Link
-              href="/"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Send Group" />
-            </Link>
-          </ListItemButton>
-          <ListItemButton sx={{ pl: 4 }}>
-            <ListItemIcon>
-              <FaTeamspeak />
-            </ListItemIcon>
-            <Link
-              href="/"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <ListItemText primary="Broadcast" />
-            </Link>
-          </ListItemButton>
-        </List>
-      </Collapse>
-
-      <ListItemButton>
+              <List component="div" disablePadding>
+                {item.submenu.map((subItem) => (
+                  <ListItemButton sx={{ pl: 4 }} key={subItem.text}>
+                    <ListItemIcon>{subItem.icon}</ListItemIcon>
+                    <Link
+                      href={subItem.link}
+                      style={{ textDecoration: "none", color: "inherit" }}
+                    >
+                      <ListItemText primary={subItem.text} />
+                    </Link>
+                  </ListItemButton>
+                ))}
+              </List>
+            </Collapse>
+          )}
+        </React.Fragment>
+      ))}
+      <Divider />
+      <ListItemButton onClick={handleLogout}>
         <ListItemIcon>
           <FaArrowRightFromBracket size={"25px"} />
         </ListItemIcon>
-        <ListItemText primary="Logout" onClick={handleLogout} />
+        <ListItemText primary="Logout" />
       </ListItemButton>
     </>
   );
