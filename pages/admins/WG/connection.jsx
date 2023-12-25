@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 // import Button from "@mui/material/Button";
 
-export default function connection() {
+export default function Connection() {
   const [qrCode, setQrCode] = useState("");
   const [status, setStatus] = useState("Disconnected");
 
