@@ -23,6 +23,7 @@ import {
   FaMoneyBillTransfer,
   FaMoneyCheck,
 } from "react-icons/fa6";
+import { RiAdminFill } from "react-icons/ri";
 import { LuClipboardEdit } from "react-icons/lu";
 import { BsClipboard2Plus } from "react-icons/bs";
 import { signOut } from "next-auth/react";
@@ -52,7 +53,7 @@ const menuItems = [
       },
       {
         icon: <LuClipboardEdit />,
-        text: "Ubah Tagihan",
+        text: "Daftar Tagihan",
         link: "/admins/ubahTagihan",
       },
       { icon: <FaMoneyCheck />, text: "Deposit", link: "/admins/aturDeposit" },
@@ -64,7 +65,7 @@ const menuItems = [
     link: "/admins/pembayaran",
     dropdown: true,
     submenu: [
-      { icon: <FaMoneyBills />, text: "Fraktur", link: "/admins/fraktur" },
+      { icon: <FaMoneyBills />, text: "Faktur", link: "/admins/fraktur" },
       {
         icon: <FaMoneyBillTransfer />,
         text: "Riwayat Pembayaran",
@@ -79,12 +80,20 @@ const menuItems = [
     dropdown: true,
     submenu: [
       { icon: <FaForumbee />, text: "Koneksi", link: "/admins/WG/connection" },
-      { icon: <FaPerson />, text: "Send Private", link: "/" },
-      { icon: <FaPeopleGroup />, text: "Send Group", link: "/" },
-      { icon: <FaTeamspeak />, text: "Broadcast", link: "/" },
+      // { icon: <FaPerson />, text: "Send Private", link: "/" },
+      // { icon: <FaPeopleGroup />, text: "Send Group", link: "/" },
+      {
+        icon: <FaTeamspeak />,
+        text: "Broadcast tagihan",
+        link: "/admins/WG/broadcastTagihan",
+      },
     ],
   },
- 
+  {
+    icon: <RiAdminFill size={"25px"} />,
+    text: "Administrator",
+    link: "/admins/administrator",
+  },
 ];
 
 export default function Sidebar() {

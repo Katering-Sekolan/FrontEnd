@@ -35,13 +35,13 @@ export default function Connection() {
     return () => {
       socket.disconnect();
     };
-  }, [update]);
+  }, []);
 
   const handleLogout = async () => {
     try {
       const response = await WhatsAppService.logout();
       SweatAlertTimer("Success!", response.data.message, "success");
-      setUpdate(!update);
+      // setUpdate(!update);
     } catch (error) {
       SweatAlertTimer("Error!", error.response.data.message, "error");
     }
