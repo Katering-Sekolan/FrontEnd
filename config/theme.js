@@ -1,65 +1,68 @@
-import { createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors';
+import { createTheme } from "@mui/material/styles";
+import { red } from "@mui/material/colors";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#272191',
+      main: "#272191",
     },
     secondary: {
-      main: '#6861ff',
+      main: "#6861ff",
     },
     blueSky: {
-      main: '#A6F6FF',
+      main: "#A6F6FF",
     },
     bgbox: {
-      main: '#BEFFF7',
+      main: "#BEFFF7",
     },
     error: {
       main: red.A400,
     },
+    greyCool: {
+      main: "#D3D3D3",
+    },
   },
   typography: {
-    fontFamily: 'Poppins, sans-serif',
+    fontFamily: "Poppins, sans-serif",
     fontSize: 16,
     h1: {
-      fontSize: '2.5rem',
+      fontSize: "2.5rem",
       fontWeight: 700,
       lineHeight: 1.2,
     },
     h2: {
-      fontSize: '2rem',
+      fontSize: "2rem",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     h3: {
-      fontSize: '1.75rem',
+      fontSize: "1.75rem",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     h4: {
-      fontSize: '1.5rem',
+      fontSize: "1.5rem",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     h5: {
-      fontSize: '1.25rem',
+      fontSize: "1.25rem",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     h6: {
-      fontSize: '1rem',
+      fontSize: "1rem",
       fontWeight: 600,
       lineHeight: 1.2,
     },
     body1: {
-      fontSize: '1rem',
+      fontSize: "1rem",
     },
     body2: {
-      fontSize: '0.875rem',
+      fontSize: "0.875rem",
     },
     caption: {
-      fontSize: '0.75rem',
+      fontSize: "0.75rem",
     },
   },
   breakpoints: {

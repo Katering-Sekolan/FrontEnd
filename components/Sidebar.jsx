@@ -26,6 +26,7 @@ import {
 import { RiAdminFill } from "react-icons/ri";
 import { LuClipboardEdit } from "react-icons/lu";
 import { BsClipboard2Plus } from "react-icons/bs";
+import { GiPriceTag } from "react-icons/gi";
 import { signOut } from "next-auth/react";
 import Divider from "@mui/material/Divider";
 
@@ -39,6 +40,11 @@ const menuItems = [
     icon: <FaUsers size={"25px"} />,
     text: "Pelanggan",
     link: "/admins/pelanggan",
+  },
+  {
+    icon: <GiPriceTag size={"25px"} />,
+    text: "Menu Harga",
+    link: "/admins/harga",
   },
   {
     icon: <FaClipboardList size={"25px"} />,
