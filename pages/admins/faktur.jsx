@@ -2,56 +2,41 @@ import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import Toolbar from "@mui/material";
+import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
-import Header from "@/components/Header";
 import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import InputAdornment from "@mui/material/InputAdornment";
 import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Chip from "@mui/material/Chip";
+import CssBaseline from "@mui/material/CssBaseline";
+import Header from "@/components/Header";
 import theme from "@/config/theme";
 import axios from "axios";
-import { Grid } from "@mui/material";
-import InputAdornment from "@mui/material/InputAdornment";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PembayaranService } from "@/services/pembayaranService";
-import { Chip } from "@mui/material";
 
 export default function MonthlyPayment() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
+  const [searchResults, setSearchResults] = useState([]); 
   const [selectedPayments, setSelectedPayments] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
   const [efektifSnack, setEfektifSnack] = useState("");
   const [efektifMakanSiang, setEfektifMakanSiang] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
-    {
-      field: "nama",
-      headerName: "Nama",
-      width: 250,
-    },
-    {
-      field: "kelas",
-      headerName: "Kelas",
-      width: 150,
-    },
-    {
-      field: "nomor_hp",
-      headerName: "Nomor HP",
-      width: 200,
-    },
-    {
-      field: "total_tagihan",
-      headerName: "Total Tagihan",
-      width: 150,
-    },
+    { field: "nama", headerName: "Nama", width: 250 },
+    { field: "kelas", headerName: "Kelas", width: 150 },
+    { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
+    { field: "total_tagihan", headerName: "Total Tagihan", width: 150 },
     { field: "total_pembayaran", headerName: "Total Pembayaran", width: 150 },
-
     {
       field: "status_pembayaran",
       headerName: "Status",
@@ -69,7 +54,6 @@ export default function MonthlyPayment() {
         />
       ),
     },
-
     {
       field: "tanggal_pembayaran",
       headerName: "Tanggal Pembayaran",
@@ -83,6 +67,10 @@ export default function MonthlyPayment() {
     }
   }, [paymentDate]);
 
+  useEffect(() => {
+    search();
+  }, [searchInput, monthlyPayments]);
+
   const fetchMonthlyPayments = async () => {
     try {
       const response = await PembayaranService.getByMonth(paymentDate);
@@ -92,12 +80,13 @@ export default function MonthlyPayment() {
         kelas: payment.tagihan_bulanan.user_tagihan_bulanan.kelas,
         nomor_hp: payment.tagihan_bulanan.user_tagihan_bulanan.nomor_hp,
         total_tagihan: `Rp. ${payment.tagihan_bulanan.total_tagihan}`,
-        total_pembayaran: `Rp. ${payment.jumlah_pembayaran}`,
+        total_pembayaran: `Rp. ${payment.total_pembayaran}`,
         status_pembayaran: payment.status_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
       }));
 
       setMonthlyPayments(data);
+      // setSearchResults(data); 
     } catch (error) {
       console.error("Error fetching monthly payments:", error);
     }
@@ -113,7 +102,7 @@ export default function MonthlyPayment() {
 
   const handleSelectAllCheckboxChange = (event) => {
     if (event.target.checked) {
-      const allPaymentIds = monthlyPayments.map((payment) => payment.id);
+      const allPaymentIds = searchResults.map((payment) => payment.id);
       setSelectedPayments(allPaymentIds);
     } else {
       setSelectedPayments([]);
@@ -139,6 +128,16 @@ export default function MonthlyPayment() {
     }
   };
 
+  const search = () => {
+    const filteredPayments = monthlyPayments.filter(
+      (payment) =>
+        payment.nama.toLowerCase().includes(searchInput.toLowerCase()) ||
+        payment.nomor_hp.toString().includes(searchInput.toLowerCase()) ||
+        payment.kelas.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setSearchResults(filteredPayments);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
@@ -160,14 +159,14 @@ export default function MonthlyPayment() {
           <Toolbar />
           <Grid
             container
-            marginBottom="8px"
             direction="row"
             justifyContent="space-between"
             alignItems="center"
+            marginBottom="8px"
           >
-            <Container item>
+            <Grid item>
               <TextField
-                label="Tanggal Pembayaran"
+                label="Tanggal Tagihan"
                 type="month"
                 style={{ marginRight: "8px" }}
                 onChange={(e) => setPaymentDate(e.target.value)}
@@ -177,20 +176,21 @@ export default function MonthlyPayment() {
                 size="small"
               />
               <Button variant="contained" onClick={handleOpenModal}>
-                Update Pembayaran
+                Ubah Pembayaran
               </Button>
-            </Container>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="cari Nama, Nomor HP, atau Kelas"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                variant="outlined"
+                size="small"
+                style={{ width: "300px" }}
+              />
+            </Grid>
           </Grid>
-          <DataGrid
-            rows={monthlyPayments}
-            columns={columns}
-            pageSize={10}
-            checkboxSelection
-            onSelectionModelChange={(newSelection) =>
-              setSelectedPayments(newSelection.selectionModel)
-            }
-          />
-
+          <DataGrid rows={searchResults} columns={columns} pageSize={10} />
           <Modal open={openModal} onClose={handleCloseModal}>
             <Box
               sx={{

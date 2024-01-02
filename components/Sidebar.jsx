@@ -64,11 +64,11 @@ const menuItems = [
     link: "/admins/pembayaran",
     dropdown: true,
     submenu: [
-      { icon: <FaMoneyBills />, text: "Fraktur", link: "/admins/fraktur" },
+      { icon: <FaMoneyBills />, text: "Faktur", link: "/admins/faktur" },
       {
         icon: <FaMoneyBillTransfer />,
         text: "Riwayat Pembayaran",
-        link: "/admins/riwayatPembayaran",
+        link: "/user/bayarTagihan?userId=2&month=2023-01",
       },
     ],
   },
@@ -84,7 +84,6 @@ const menuItems = [
       { icon: <FaTeamspeak />, text: "Broadcast", link: "/" },
     ],
   },
- 
 ];
 
 export default function Sidebar() {

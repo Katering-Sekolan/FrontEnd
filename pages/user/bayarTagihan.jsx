@@ -20,6 +20,7 @@ import {
 import { PembayaranService } from "@/services/pembayaranService";
 import Script from "next/script";
 import SnapMidtransContainer from "@/components/SnapMidtransContainer";
+import Head from "next/head";
 
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
@@ -361,6 +362,11 @@ const PembayaranTagihan = () => {
 
   return (
     <>
+      <Head>
+        <title>
+          Proses Pembayaran Tagihan Katering Qita bulan {formattedBulanTagihan}
+        </title>
+      </Head>
       <Script
         src={`https://app.sandbox.midtrans.com/snap/snap.js`}
         // strategy="beforeInteractive"
