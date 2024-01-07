@@ -23,8 +23,10 @@ import {
   FaMoneyBillTransfer,
   FaMoneyCheck,
 } from "react-icons/fa6";
+import { RiAdminFill } from "react-icons/ri";
 import { LuClipboardEdit } from "react-icons/lu";
 import { BsClipboard2Plus } from "react-icons/bs";
+import { GiPriceTag } from "react-icons/gi";
 import { signOut } from "next-auth/react";
 import Divider from "@mui/material/Divider";
 
@@ -40,6 +42,11 @@ const menuItems = [
     link: "/admins/pelanggan",
   },
   {
+    icon: <GiPriceTag size={"25px"} />,
+    text: "Menu Harga",
+    link: "/admins/harga",
+  },
+  {
     icon: <FaClipboardList size={"25px"} />,
     text: "Tagihan",
     link: "/admins/tagihan",
@@ -52,7 +59,7 @@ const menuItems = [
       },
       {
         icon: <LuClipboardEdit />,
-        text: "Ubah Tagihan",
+        text: "Daftar Tagihan",
         link: "/admins/ubahTagihan",
       },
       { icon: <FaMoneyCheck />, text: "Deposit", link: "/admins/aturDeposit" },
@@ -64,7 +71,7 @@ const menuItems = [
     link: "/admins/pembayaran",
     dropdown: true,
     submenu: [
-      { icon: <FaMoneyBills />, text: "Faktur", link: "/admins/faktur" },
+      { icon: <FaMoneyBills />, text: "Faktur", link: "/admins/fraktur" },
       {
         icon: <FaMoneyBillTransfer />,
         text: "Riwayat Pembayaran",
@@ -79,10 +86,19 @@ const menuItems = [
     dropdown: true,
     submenu: [
       { icon: <FaForumbee />, text: "Koneksi", link: "/admins/WG/connection" },
-      { icon: <FaPerson />, text: "Send Private", link: "/" },
-      { icon: <FaPeopleGroup />, text: "Send Group", link: "/" },
-      { icon: <FaTeamspeak />, text: "Broadcast", link: "/" },
+      // { icon: <FaPerson />, text: "Send Private", link: "/" },
+      // { icon: <FaPeopleGroup />, text: "Send Group", link: "/" },
+      {
+        icon: <FaTeamspeak />,
+        text: "Broadcast tagihan",
+        link: "/admins/WG/broadcastTagihan",
+      },
     ],
+  },
+  {
+    icon: <RiAdminFill size={"25px"} />,
+    text: "Administrator",
+    link: "/admins/administrator",
   },
 ];
 

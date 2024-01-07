@@ -3,24 +3,22 @@ const { io } = require("socket.io-client");
 import { useRouter } from "next/router";
 import axios from "axios";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
-
 import Header from "@/components/Header";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "@/config/theme";
 import CssBaseline from "@mui/material/CssBaseline";
-import {
-  Box,
-  Container,
-  Paper,
-  Toolbar,
-  Typography,
-  Button,
-} from "@mui/material";
-// import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { WhatsAppService } from "@/services/whatsappService";
 
-export default function connection() {
+export default function Connection() {
   const [qrCode, setQrCode] = useState("");
   const [status, setStatus] = useState("Disconnected");
+  const [update, setUpdate] = useState(false);
 
   const router = useRouter();
 
@@ -39,17 +37,13 @@ export default function connection() {
     };
   }, []);
 
-  const logout = async () => {
+  const handleLogout = async () => {
     try {
-      const res = await axios.post(
-        process.env.NEXT_PUBLIC_API_URL + "/w/logout"
-      );
-      if (res.data.status === true) {
-        router.push("/admins/dashboard");
-        SweatAlertTimer("Session berhasil logout", "success");
-      }
+      const response = await WhatsAppService.logout();
+      SweatAlertTimer("Success!", response.data.message, "success");
+      // setUpdate(!update);
     } catch (error) {
-      SweatAlertTimer(error.res.data.message, "error");
+      SweatAlertTimer("Error!", error.response.data.message, "error");
     }
   };
 
@@ -105,15 +99,13 @@ export default function connection() {
                       Menunggu koneksi atau sudah terhubung...
                     </Typography>
                   )}
-                  {status === "Connected" && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={logout}
-                    >
-                      Logout
-                    </Button>
-                  )}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Button>
                 </Box>
               </Paper>
             </Container>

@@ -5,4 +5,12 @@ export const WhatsAppService = {
     const response = await API.post("/wa/sendMessage", data);
     return response;
   },
+  broadcastMessages: async (month) => {
+    const response = await API.post(`/wa/broadcastMessage/${month}`);
+    return response;
+  },
+  logout: async () => {
+    const response = await API.post("/wa/logout");
+    return response;
+  },
 };
