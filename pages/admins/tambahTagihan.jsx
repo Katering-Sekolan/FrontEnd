@@ -6,21 +6,20 @@ import TextField from "@mui/material/TextField";
 import Checkbox from "@mui/material/Checkbox";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Header from "@/components/Header";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
-import axios from "axios";
 import { Grid } from "@mui/material";
 import theme from "@/config/theme";
-import InputAdornment from "@mui/material/InputAdornment";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PelangganService } from "@/services/pelangganService";
 import { TagihanService } from "@/services/tagihanService";
-import { Tag } from "@mui/icons-material";
-import { data } from "autoprefixer";
+// import { Tag } from "@mui/icons-material";
+// import { data } from "autoprefixer";
 
 export default function tambahTagihan() {
   const [efektif_snack, setefektif_snack] = useState("");
@@ -162,7 +161,7 @@ export default function tambahTagihan() {
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) => theme.palette.grey[100],
+            backgroundColor: "greyCool.main",
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",
@@ -170,86 +169,101 @@ export default function tambahTagihan() {
           }}
         >
           <Toolbar />
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom="8px"
-          >
-            <Grid item>
-              <TextField
-                label="Tanggal Tagihan"
-                type="month"
-                style={{ marginRight: "8px" }}
-                onChange={(e) => setTagihanDate(e.target.value)}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                size="small"
-              />
-              <Button variant="contained" onClick={handleOpenModal}>
-                Tambah Tagihan
-              </Button>
-            </Grid>
-            <Grid item>
-              <TextField
-                label="cari Nama, Nomor HP, atau Kelas"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                variant="outlined"
-                size="small"
-                style={{ width: "300px" }}
-              />
-            </Grid>
-          </Grid>
-          <DataGrid rows={filteredTagihan} columns={columns} pageSize={10} />
-
-          <Modal open={openModal} onClose={handleCloseModal}>
-            <Box
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper
               sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                bgcolor: "white",
-                boxShadow: 24,
-                padding: 4,
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                borderRadius: 2,
               }}
             >
-              <h2>Tambah Tagihan</h2>
-              <Container>
-                {tagihanDate && (
-                  <>
-                    <TextField
-                      label="Jumalah Snack"
-                      type="number"
-                      value={efektif_snack}
-                      onChange={(e) => setefektif_snack(e.target.value)}
-                      fullWidth
-                      margin="normal"
-                    />
-                    <TextField
-                      label="Jumalah Makan Siang"
-                      type="number"
-                      value={efektif_makanSiang}
-                      onChange={(e) => setefektif_maanSiang(e.target.value)}
-                      fullWidth
-                      margin="normal"
-                    />
-                    <Button
-                      variant="contained"
-                      onClick={handleSaveTagihan}
-                      startIcon={<SaveIcon />}
-                      fullWidth
-                    >
-                      Simpan Tagihan
-                    </Button>
-                  </>
-                )}
-              </Container>
-            </Box>
-          </Modal>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                marginBottom="8px"
+              >
+                <Grid item>
+                  <TextField
+                    label="Tanggal Tagihan"
+                    type="month"
+                    style={{ marginRight: "8px" }}
+                    onChange={(e) => setTagihanDate(e.target.value)}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    size="small"
+                  />
+                  <Button variant="contained" onClick={handleOpenModal}>
+                    Tambah Tagihan
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label="cari Nama, Nomor HP, atau Kelas"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    style={{ width: "300px" }}
+                  />
+                </Grid>
+              </Grid>
+              <DataGrid
+                rows={filteredTagihan}
+                columns={columns}
+                pageSize={10}
+              />
+
+              <Modal open={openModal} onClose={handleCloseModal}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    bgcolor: "white",
+                    boxShadow: 24,
+                    padding: 4,
+                  }}
+                >
+                  <h2>Tambah Tagihan</h2>
+                  <Container>
+                    {tagihanDate && (
+                      <>
+                        <TextField
+                          label="Jumalah Snack"
+                          type="number"
+                          value={efektif_snack}
+                          onChange={(e) => setefektif_snack(e.target.value)}
+                          fullWidth
+                          margin="normal"
+                        />
+                        <TextField
+                          label="Jumalah Makan Siang"
+                          type="number"
+                          value={efektif_makanSiang}
+                          onChange={(e) => setefektif_maanSiang(e.target.value)}
+                          fullWidth
+                          margin="normal"
+                        />
+                        <Button
+                          variant="contained"
+                          onClick={handleSaveTagihan}
+                          startIcon={<SaveIcon />}
+                          fullWidth
+                        >
+                          Simpan Tagihan
+                        </Button>
+                      </>
+                    )}
+                  </Container>
+                </Box>
+              </Modal>
+            </Paper>
+          </Grid>
         </Box>
       </Box>
     </ThemeProvider>

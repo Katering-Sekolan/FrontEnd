@@ -11,7 +11,6 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import axios from "axios";
@@ -24,10 +23,10 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import { PelangganService } from "@/services/pelangganService";
 import { WhatsAppService } from "@/services/whatsappService";
+import InputAdornment from "@mui/material/InputAdornment";
 
 export default function Pelanggan() {
   const [pelanggan, setPelanggan] = useState([]);
-  // console.log(pelanggan);
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
   const [newPelanggan, setNewPelanggan] = useState({ nomor_hp: "", nama: "" });
@@ -36,7 +35,6 @@ export default function Pelanggan() {
   const [message, setMessage] = useState("");
   const [filteredPelanggan, setFilteredPelanggan] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  // const [whatsapp, setWhatsapp] = useState({ number: nomor_hp, message: "" });
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
@@ -291,10 +289,7 @@ export default function Pelanggan() {
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: "greyCool.main",
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",
@@ -302,135 +297,155 @@ export default function Pelanggan() {
           }}
         >
           <Toolbar />
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom="8px"
-          >
-            <Button variant="contained" onClick={handleOpenModal}>
-              Tambah Pelanggan
-            </Button>
-            <TextField
-              label="Cari Nama, Nomor HP, atau Kelas"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              variant="outlined"
-              size="small"
-              style={{ width: "300px" }}
-            />
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                borderRadius: 2,
+              }}
+            >
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                marginBottom="8px"
+              >
+                <Button variant="contained" onClick={handleOpenModal}>
+                  Tambah Pelanggan
+                </Button>
+                <TextField
+                  label="Cari Nama, Nomor HP, atau Kelas"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  style={{ width: "300px" }}
+                />
+              </Grid>
+
+              <DataGrid
+                rows={filteredPelanggan}
+                columns={columns}
+                pageSize={10}
+              />
+
+              <Modal open={openModal} onClose={handleCloseModal}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    bgcolor: "white",
+                    boxShadow: 24,
+                    p: 4,
+                  }}
+                >
+                  <h2>
+                    {editingPelanggan ? "Edit Pelanggan" : "Tambah Pelanggan"}
+                  </h2>
+                  <Container>
+                    <TextField
+                      label="Nama"
+                      name="nama"
+                      value={newPelanggan.nama}
+                      onChange={handleInputChange}
+                      fullWidth
+                      margin="normal"
+                    />
+                    <TextField
+                      label="No HP"
+                      name="nomor_hp"
+                      value={newPelanggan.nomor_hp}
+                      onChange={handleInputChange}
+                      InputProps={{
+                        startAdornment: editingPelanggan ? null : (
+                          <InputAdornment position="start">62</InputAdornment>
+                        ),
+                      }}
+                      fullWidth
+                      margin="normal"
+                    />
+                    <FormControl fullWidth margin="normal">
+                      <InputLabel id="kelas-label">Kelas</InputLabel>
+                      <Select
+                        labelId="kelas-label"
+                        id="kelas"
+                        name="kelas"
+                        value={newPelanggan.kelas}
+                        onChange={handleInputChange}
+                        label="Kelas"
+                      >
+                        {kelasOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                    <Button
+                      variant="contained"
+                      onClick={
+                        editingPelanggan
+                          ? handleUpdatePelanggan
+                          : handleAddPelanggan
+                      }
+                      startIcon={<SaveIcon />}
+                      fullWidth
+                    >
+                      {editingPelanggan ? "Update" : "Simpan"}
+                    </Button>
+                  </Container>
+                </Box>
+              </Modal>
+
+              <Modal open={openModal2} onClose={handleCloseModal}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    bgcolor: "white",
+                    boxShadow: 24,
+                    p: 4,
+                  }}
+                >
+                  <h2>Kirim pesan whatsapp</h2>
+                  <Container>
+                    <TextField
+                      label="No Hp."
+                      name="number"
+                      value={number}
+                      disabled
+                      fullWidth
+                      margin="normal"
+                    />
+                    <TextField
+                      label="Pesan"
+                      name="message"
+                      onChange={handleMessage}
+                      fullWidth
+                      margin="normal"
+                    />
+                    <Button
+                      variant="contained"
+                      onClick={handleSendMessage}
+                      startIcon={<WhatsAppIcon />}
+                      color="success"
+                      fullWidth
+                    >
+                      Kirim
+                    </Button>
+                  </Container>
+                </Box>
+              </Modal>
+            </Paper>
           </Grid>
-
-          <DataGrid rows={filteredPelanggan} columns={columns} pageSize={10} />
-
-          <Modal open={openModal} onClose={handleCloseModal}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                bgcolor: "white",
-                boxShadow: 24,
-                p: 4,
-              }}
-            >
-              <h2>
-                {editingPelanggan ? "Edit Pelanggan" : "Tambah Pelanggan"}
-              </h2>
-              <Container>
-                <TextField
-                  label="Nama"
-                  name="nama"
-                  value={newPelanggan.nama}
-                  onChange={handleInputChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="No HP"
-                  name="nomor_hp"
-                  value={newPelanggan.nomor_hp}
-                  onChange={handleInputChange}
-                  fullWidth
-                  margin="normal"
-                />
-                <FormControl fullWidth margin="normal">
-                  <InputLabel id="kelas-label">Kelas</InputLabel>
-                  <Select
-                    labelId="kelas-label"
-                    id="kelas"
-                    name="kelas"
-                    value={newPelanggan.kelas}
-                    onChange={handleInputChange}
-                    label="Kelas"
-                  >
-                    {kelasOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <Button
-                  variant="contained"
-                  onClick={
-                    editingPelanggan
-                      ? handleUpdatePelanggan
-                      : handleAddPelanggan
-                  }
-                  startIcon={<SaveIcon />}
-                  fullWidth
-                >
-                  {editingPelanggan ? "Update" : "Simpan"}
-                </Button>
-              </Container>
-            </Box>
-          </Modal>
-
-          <Modal open={openModal2} onClose={handleCloseModal}>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                bgcolor: "white",
-                boxShadow: 24,
-                p: 4,
-              }}
-            >
-              <h2>Kirim pesan whatsapp</h2>
-              <Container>
-                <TextField
-                  label="No Hp."
-                  name="number"
-                  value={number}
-                  disabled
-                  fullWidth
-                  margin="normal"
-                />
-                <TextField
-                  label="Pesan"
-                  name="message"
-                  onChange={handleMessage}
-                  fullWidth
-                  margin="normal"
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleSendMessage}
-                  startIcon={<WhatsAppIcon />}
-                  color="success"
-                  fullWidth
-                >
-                  Kirim
-                </Button>
-              </Container>
-            </Box>
-          </Modal>
         </Box>
       </Box>
     </ThemeProvider>

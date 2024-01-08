@@ -4,20 +4,18 @@ import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
 import Header from "@/components/Header";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import axios from "axios";
-import { Grid, Paper } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
-import InputAdornment from "@mui/material/InputAdornment";
 import { TagihanService } from "@/services/tagihanService";
 
 export default function TagihanBulanan() {
@@ -166,10 +164,7 @@ export default function TagihanBulanan() {
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: "greyCool.main",
             flexGrow: 1,
             height: "100vh",
             overflow: "auto",
@@ -177,88 +172,99 @@ export default function TagihanBulanan() {
           }}
         >
           <Toolbar />
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom="8px"
-          >
-            <Grid item>
-              <TextField
-                label="Tanggal Tagihan"
-                type="month"
-                onChange={(e) => setTagihanDate(e.target.value)}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                size="small"
-              />
-            </Grid>
-            <Grid item>
-              <TextField
-                label="cari Nama, Nomor HP, atau Kelas"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                variant="outlined"
-                size="small"
-                style={{ width: "300px" }}
-              />
-            </Grid>
-          </Grid>
-
-          <DataGrid
-            rows={filteredTagihan}
-            columns={columns}
-            pageSize={10}
-            autoHeight
-          />
-
-          <Modal open={openModal} onClose={handleCloseModal}>
-            <Box
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper
               sx={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                bgcolor: "white",
-                boxShadow: 24,
-                p: 4,
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                borderRadius: 2,
               }}
             >
-              <h2>Edit Tagihan</h2>
-              <Container>
-                {selectedRow && (
-                  <>
-                    <TextField
-                      label="Jumlah Snack"
-                      type="number"
-                      value={efektif_snack}
-                      onChange={(e) => setEfektifSnack(e.target.value)}
-                      fullWidth
-                      margin="normal"
-                    />
-                    <TextField
-                      label="Jumlah Makan Siang"
-                      type="number"
-                      value={efektif_makanSiang}
-                      onChange={(e) => setEfektifMakanSiang(e.target.value)}
-                      fullWidth
-                      margin="normal"
-                    />
-                    <Button
-                      variant="contained"
-                      onClick={handleSaveTagihan}
-                      startIcon={<SaveIcon />}
-                      fullWidth
-                    >
-                      Simpan Tagihan
-                    </Button>
-                  </>
-                )}
-              </Container>
-            </Box>
-          </Modal>
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                marginBottom="8px"
+              >
+                <Grid item>
+                  <TextField
+                    label="Tanggal Tagihan"
+                    type="month"
+                    onChange={(e) => setTagihanDate(e.target.value)}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    size="small"
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label="cari Nama, Nomor HP, atau Kelas"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    style={{ width: "300px" }}
+                  />
+                </Grid>
+              </Grid>
+
+              <DataGrid
+                rows={filteredTagihan}
+                columns={columns}
+                pageSize={10}
+                autoHeight
+              />
+
+              <Modal open={openModal} onClose={handleCloseModal}>
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    bgcolor: "white",
+                    boxShadow: 24,
+                    p: 4,
+                  }}
+                >
+                  <h2>Edit Tagihan</h2>
+                  <Container>
+                    {selectedRow && (
+                      <>
+                        <TextField
+                          label="Jumlah Snack"
+                          type="number"
+                          value={efektif_snack}
+                          onChange={(e) => setEfektifSnack(e.target.value)}
+                          fullWidth
+                          margin="normal"
+                        />
+                        <TextField
+                          label="Jumlah Makan Siang"
+                          type="number"
+                          value={efektif_makanSiang}
+                          onChange={(e) => setEfektifMakanSiang(e.target.value)}
+                          fullWidth
+                          margin="normal"
+                        />
+                        <Button
+                          variant="contained"
+                          onClick={handleSaveTagihan}
+                          startIcon={<SaveIcon />}
+                          fullWidth
+                        >
+                          Simpan Tagihan
+                        </Button>
+                      </>
+                    )}
+                  </Container>
+                </Box>
+              </Modal>
+            </Paper>
+          </Grid>
         </Box>
       </Box>
     </ThemeProvider>

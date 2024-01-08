@@ -3,21 +3,14 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
 import Header from "@/components/Header";
-import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import axios from "axios";
-import { Grid, Paper } from "@mui/material";
+import Grid from "@mui/material/Grid";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
-import InputAdornment from "@mui/material/InputAdornment";
 import { TagihanService } from "@/services/tagihanService";
 import { WhatsAppService } from "@/services/whatsappService";
 
@@ -79,14 +72,12 @@ export default function BroadcastTagihan() {
           <Box
             component="main"
             sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
+              backgroundColor: "greyCool.main",
               flexGrow: 1,
               height: "100vh",
               overflow: "auto",
               padding: 2,
+              borderRadius: 2,
             }}
           >
             <Toolbar />

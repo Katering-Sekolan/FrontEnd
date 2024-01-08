@@ -92,6 +92,7 @@ export default function Harga() {
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
+                borderRadius: 2,
               }}
             >
               <DataGrid rows={harga} columns={columns} pageSize={10} />

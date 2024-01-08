@@ -15,14 +15,8 @@ import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import SaveIcon from "@mui/icons-material/Save";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import axios from "axios";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import SweatAlertDelete from "@/config/SweatAlert/delete";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 
 export default function Administrator() {
   const [administrator, setAdministrator] = useState([]);
@@ -34,7 +28,6 @@ export default function Administrator() {
     password: "",
   });
   const [editingAdministrator, setEditingAdministrator] = useState(null);
-  console.log(administrator);
 
   useEffect(() => {
     fetchData();
@@ -197,10 +190,7 @@ export default function Administrator() {
           <Box
             component="main"
             sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === "light"
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
+              backgroundColor: "greyCool.main",
               flexGrow: 1,
               height: "100vh",
               overflow: "auto",
@@ -215,6 +205,7 @@ export default function Administrator() {
                   p: 2,
                   display: "flex",
                   flexDirection: "column",
+                  borderRadius: 2,
                 }}
               >
                 <Grid
