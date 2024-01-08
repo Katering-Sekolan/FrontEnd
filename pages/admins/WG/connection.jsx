@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 const { io } = require("socket.io-client");
-import { useRouter } from "next/router";
-import axios from "axios";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import Header from "@/components/Header";
 import { ThemeProvider } from "@mui/material/styles";
@@ -18,9 +16,6 @@ import { WhatsAppService } from "@/services/whatsappService";
 export default function Connection() {
   const [qrCode, setQrCode] = useState("");
   const [status, setStatus] = useState("Disconnected");
-  const [update, setUpdate] = useState(false);
-
-  const router = useRouter();
 
   useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_API_URL);
@@ -56,7 +51,7 @@ export default function Connection() {
           <Box
             component="main"
             sx={{
-              backgroundColor: (theme) => theme.palette.grey[100],
+              backgroundColor: "greyCool.main",
               flexGrow: 1,
               height: "100vh",
               overflow: "auto",
