@@ -25,6 +25,10 @@ export const PembayaranService = {
         const response = await API.put(`/pembayaran/update/${id}`, data);
         return response;
     },
+    bayarTunai: async (id, data) => {
+        const response = await API.put(`/prosesPembayaran/bayarTunai/${id}`, data);
+        return response;
+    },
     delete: async (id) => {
         const response = await API.delete(`/pembayaran/delete/${id}`);
         return response;

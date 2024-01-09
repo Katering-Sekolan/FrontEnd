@@ -173,7 +173,7 @@ const PembayaranTagihan = () => {
     }
   };
 
-  const columns = ["Detail", "Jumlah", "Total Tagihan"];
+  const columns = ["Detail", "Jumlah", "Harga"];
   const rows = [
     {
       nama: "Makanan Siang",
@@ -181,6 +181,7 @@ const PembayaranTagihan = () => {
       total: formattedTotalMakanan,
     },
     { nama: "Snack", jumlah: jumlah_snack, total: formattedTotalSnack },
+    {nama: "Total Tagihan", jumlah: null, total: formattedTotalTagihan, bold: true},
     { nama: "Bayar Tunai", jumlah: null, total: formattedTotalPembayaranCash },
     {
       nama: "Total Pembayaran",

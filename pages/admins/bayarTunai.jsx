@@ -13,9 +13,11 @@ import RincianTagihan from "@/components/RincianTagihan";
 import { Box, Typography, Chip, Paper } from "@mui/material";
 import { FaPrint } from "react-icons/fa6";
 import { TbFileInfo } from "react-icons/tb";
+import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PembayaranService } from "@/services/pembayaranService";
 import { Edit } from "@mui/icons-material";
 import { Container } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment";
 
 export default function CashPayment() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
@@ -23,9 +25,10 @@ export default function CashPayment() {
   const [paymentDate, setPaymentDate] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [bayarTunai, setBayarTunai] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const columns = [
-    { field: "user_id", headerName: "No", width: 70 },
+    { field: "id", headerName: "No", width: 70 },
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
     { field: "bayar_tunai", headerName: "Bayar Tunai", width: 200 },
@@ -48,6 +51,7 @@ export default function CashPayment() {
     },
     { field: "total_tagihan", headerName: "Total Tagihan", width: 150 },
     { field: "total_pembayaran", headerName: "Total Pembayaran", width: 150 },
+    { field: "metode", headerName: "Metode", width: 200 },
     {
       field: "action",
       headerName: "Action",
@@ -58,9 +62,9 @@ export default function CashPayment() {
           size="small"
           startIcon={<Edit />}
           sx={{ marginRight: 1 }}
-          onClick={() => handleEditClick(params.row)}
+          onClick={() => handleBayarTunaiClick(params.row)}
         >
-          EDIT
+          BAYAR TUNAI
         </Button>
       ),
     },
@@ -105,8 +109,12 @@ export default function CashPayment() {
     }
   };
 
+  const extractNumericValue = (stringValue) => {
+    const numericValue = stringValue.replace(/[^\d]/g, "");
+    return numericValue === "" ? 0 : parseFloat(numericValue);
+  };
+
   const handleOpenModal = () => {
-    // Add validation logic if needed
     setOpenModal(true);
   };
 
@@ -114,11 +122,28 @@ export default function CashPayment() {
     setOpenModal(false);
   };
 
-  const handleEditClick = (row) => {
+  const handleBayarTunaiClick = (row) => {
     setSelectedRow(row);
-    
-    setOpenModal(true);
+    setBayarTunai(extractNumericValue(row.bayar_tunai));
+    handleOpenModal();
   };
+
+  const handleSaveBayarTunai = async () => {
+    try {
+      let data = {
+        jumlah_pembayaran_cash: bayarTunai,
+      };
+      const response = await PembayaranService.bayarTunai(selectedRow.id, data);
+      handleCloseModal();
+      fetchMonthlyPayments();
+      SweatAlertTimer("Success!", response.data.message, "success");
+    } catch (error) {
+      setOpenModal(false);
+      console.error("Error updating deposit:", error);
+      SweatAlertTimer("Error!", error.response.data.message, "error");
+    }
+  };
+
   const search = () => {
     const filteredPayments = monthlyPayments.filter(
       (payment) =>
@@ -204,14 +229,24 @@ export default function CashPayment() {
                         <TextField
                           label="Bayar Tunai"
                           type="number"
-                          value=""
-                          onChange={(e) => setJumlahDeposit(e.target.value)}
+                          onChange={(e) =>
+                            setBayarTunai(extractNumericValue(e.target.value))
+                          }
                           fullWidth
                           margin="normal"
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                Rp.{" "}
+                              </InputAdornment>
+                            ),
+                          }}
                         />
-
-                        <Button variant="contained" onClick=''>
-                          TAMBAH PEMbayaran TUNAI
+                        <Button
+                          variant="contained"
+                          onClick={handleSaveBayarTunai}
+                        >
+                          TAMBAH PEMBAYARAN TUNAI
                         </Button>
                       </>
                     )}

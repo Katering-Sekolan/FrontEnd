@@ -54,6 +54,7 @@ export default function Faktur() {
     },
     { field: "total_tagihan", headerName: "Total Tagihan", width: 150 },
     { field: "total_pembayaran", headerName: "Total Pembayaran", width: 150 },
+    {field: "metode_pembayaran", headerName: "Metode Pembayaran", width: 150},
     {
       field: "action",
       headerName: "Action",
@@ -94,6 +95,7 @@ export default function Faktur() {
         total_tagihan: `Rp. ${payment.tagihan_bulanan.total_tagihan}`,
         total_pembayaran: `Rp. ${payment.total_pembayaran}`,
         status_pembayaran: payment.status_pembayaran,
+        metode_pembayaran: payment.metode_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
         bulan: new Date(payment.tagihan_bulanan.bulan)
           .toLocaleDateString("en-US", { year: "numeric", month: "2-digit" })
