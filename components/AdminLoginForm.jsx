@@ -90,11 +90,7 @@ function AdminLoginForm({ onAdminLogin }) {
                 Login
               </Button>
             </Grid>
-            <Grid item xs={12}>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
+            <Grid item xs={12}></Grid>
           </Grid>
         </form>
       </Box>

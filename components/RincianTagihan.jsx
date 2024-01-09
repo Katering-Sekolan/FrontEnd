@@ -32,7 +32,7 @@ const RincianTagihan = ({
           marginBottom: 2,
         }}
       >
-        <Typography variant="h6">Detail Pengguna</Typography>
+        <Typography variant="h6">Detail Pelanggan</Typography>
         <Typography>Nama: {nama}</Typography>
         <Typography>No HP: {nomor_hp}</Typography>
         <Typography>Kelas: {kelas}</Typography>

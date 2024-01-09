@@ -10,26 +10,21 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Header from "@/components/Header";
 import theme from "@/config/theme";
 import RincianTagihan from "@/components/RincianTagihan";
-import {
-  Box,
-  Typography,
-  Chip,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Chip, Paper } from "@mui/material";
 import { FaPrint } from "react-icons/fa6";
 import { TbFileInfo } from "react-icons/tb";
+import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PembayaranService } from "@/services/pembayaranService";
 
 export default function Faktur() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedPayments, setSelectedPayments] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
-  const [efektifSnack, setEfektifSnack] = useState("");
-  const [efektifMakanSiang, setEfektifMakanSiang] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [selectedPaymentDetails, setSelectedPaymentDetails] = useState(null);
+  const [columns2, setColumns2] = useState(["Detail", "Jumlah", "Harga"]);
+  const [rows, setRows] = useState([]);
 
   const columns = [
     { field: "user_id", headerName: "No", width: 70 },
@@ -54,7 +49,7 @@ export default function Faktur() {
     },
     { field: "total_tagihan", headerName: "Total Tagihan", width: 150 },
     { field: "total_pembayaran", headerName: "Total Pembayaran", width: 150 },
-    {field: "metode_pembayaran", headerName: "Metode Pembayaran", width: 150},
+    { field: "metode_pembayaran", headerName: "Metode Pembayaran", width: 150 },
     {
       field: "action",
       headerName: "Action",
@@ -65,7 +60,7 @@ export default function Faktur() {
           size="small"
           startIcon={<TbFileInfo />}
           sx={{ marginRight: 1 }}
-          onClick={() => handleEditClick(params.row)}
+          onClick={() => handleDetailClick(params.row)}
         >
           Detail
         </Button>
@@ -97,6 +92,13 @@ export default function Faktur() {
         status_pembayaran: payment.status_pembayaran,
         metode_pembayaran: payment.metode_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
+        jumlah_makanan: payment.tagihan_bulanan.jumlah_makanan,
+        jumlah_snack: payment.tagihan_bulanan.jumlah_snack,
+        total_makanan: payment.tagihan_bulanan.total_makanan,
+        total_snack: payment.tagihan_bulanan.total_snack,
+        jumlah_pembayaran_cash: payment.jumlah_pembayaran_cash,
+        tanggal_pembayaran: new Date(payment.tanggal_pembayaran),
+
         bulan: new Date(payment.tagihan_bulanan.bulan)
           .toLocaleDateString("en-US", { year: "numeric", month: "2-digit" })
           .replace(/\//g, "-")
@@ -106,28 +108,103 @@ export default function Faktur() {
       }));
 
       setMonthlyPayments(data);
-      // setSearchResults(data);
     } catch (error) {
       console.error("Error fetching monthly payments:", error);
     }
   };
 
-  const handleEditClick = async (selectedPaymentId) => {
+  const handleDetailClick = (selectedPaymentId) => {
     try {
-      const userId = selectedPaymentId.user_id;
+      const jumlah_makanan = selectedPaymentId.jumlah_makanan;
+      const jumlah_snack = selectedPaymentId.jumlah_snack;
+      const total_makanan = selectedPaymentId.total_makanan;
+      const total_snack = selectedPaymentId.total_snack;
+      const total_tagihan = selectedPaymentId.total_tagihan;
+      const jumlah_pembayaran_cash = selectedPaymentId.jumlah_pembayaran_cash;
+      const status_pembayaran = selectedPaymentId.status_pembayaran;
       const bulan = selectedPaymentId.bulan;
+      const nama = selectedPaymentId.nama;
+      const kelas = selectedPaymentId.kelas;
+      const nomor_hp = selectedPaymentId.nomor_hp;
+      const total_pembayaran = selectedPaymentId.total_pembayaran;
+      const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        }).format(amount);
+      };
 
-      const response = await PembayaranService.getByUserId(userId, bulan);
-      const paymentDetails = response.data;
-      setSelectedPaymentDetails(paymentDetails);
+      const formattedTotalTagihan = formatCurrency(total_tagihan);
+      const formattedTotalPembayaran = formatCurrency(total_pembayaran);
+
+      const formattedTotalPembayaranCash = formatCurrency(
+        jumlah_pembayaran_cash
+      );
+      const formattedTotalMakanan = formatCurrency(total_makanan);
+      const formattedTotalSnack = formatCurrency(total_snack);
+
+      const bulanTagihan = new Date(bulan);
+      const formattedBulanTagihan =
+        bulanTagihan instanceof Date && !isNaN(bulanTagihan)
+          ? new Intl.DateTimeFormat("id-ID", {
+              month: "long",
+              year: "numeric",
+            }).format(bulanTagihan)
+          : `Tidak ada data tagihan bulan ${selectedPaymentId.bulan}`;
+
+      const updatedColumns = ["Detail", "Jumlah", "Harga"];
+
+      const updatedRows = [
+        {
+          nama: "Makanan Siang",
+          jumlah: jumlah_makanan,
+          total: formattedTotalMakanan,
+        },
+        { nama: "Snack", jumlah: jumlah_snack, total: formattedTotalSnack },
+        {
+          nama: "Total Tagihan",
+          jumlah: null,
+          total: total_tagihan,
+          bold: true,
+        },
+        {
+          nama: "Bayar Tunai",
+          jumlah: null,
+          total: formattedTotalPembayaranCash,
+        },
+        {
+          nama: "Total Pembayaran",
+          jumlah: null,
+          total: total_pembayaran,
+          isBold: true,
+        },
+      ];
+
+      setColumns2(updatedColumns);
+      setRows(updatedRows);
+      setSelectedPaymentDetails({
+        jumlah_makanan,
+        jumlah_snack,
+        total_makanan,
+        total_snack,
+        formattedTotalTagihan,
+        jumlah_pembayaran_cash,
+        status_pembayaran,
+        bulan,
+        nama,
+        kelas,
+        nomor_hp,
+        formattedTotalPembayaran,
+        formattedBulanTagihan,
+      });
+
       handleOpenModal();
     } catch (error) {
-      console.error("Error fetching payment details:", error);
+      console.error("Error handling payment details:", error);
     }
   };
 
   const handleOpenModal = () => {
-    // Add validation logic if needed
     setOpenModal(true);
   };
 
@@ -217,32 +294,26 @@ export default function Faktur() {
                     transform: "translate(-50%, -50%)",
                     bgcolor: "white",
                     boxShadow: 24,
-                    p: 4,
+                    p: 2,
+                    width: "80%",
+                    maxHeight: "80%",
+                    overflowY: "auto",
                   }}
                 >
                   <h2>Detail Pembayaran</h2>
                   {selectedPaymentDetails ? (
                     <RincianTagihan
-                      nama={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.nama
-                      }
-                      nomor_hp={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.nomor_hp
-                      }
-                      kelas={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.kelas
-                      }
+                      nama={selectedPaymentDetails?.nama}
+                      nomor_hp={selectedPaymentDetails?.nomor_hp}
+                      kelas={selectedPaymentDetails?.kelas}
                       formattedBulanTagihan={
-                        selectedPaymentDetails.formattedBulanTagihan
+                        selectedPaymentDetails?.formattedBulanTagihan
                       }
                       status_pembayaran={
-                        selectedPaymentDetails.status_pembayaran
+                        selectedPaymentDetails?.status_pembayaran
                       }
-                      columns={selectedPaymentDetails.columns || []}
-                      rows={selectedPaymentDetails.rows || []}
+                      columns={columns2}
+                      rows={rows}
                     />
                   ) : (
                     <Typography>
