@@ -116,7 +116,7 @@ export default function Header(props) {
               px: [1],
             }}
           >
-            <img src="/logo.png" alt="logo" width="100%" height="80px" />
+            <img src="/katering_logo.png" alt="logo" width="70%" height="60%" />
             <IconButton onClick={toggleDrawer}>
               <FaAngleLeft />
             </IconButton>

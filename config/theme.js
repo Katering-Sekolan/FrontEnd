@@ -19,7 +19,7 @@ const theme = createTheme({
       main: red.A400,
     },
     greyCool: {
-      main: "#D3D3D3",
+      main: "#F2F2F2",
     },
     greyCool2: {
       main: "#E8E8E8",
