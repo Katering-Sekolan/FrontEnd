@@ -17,11 +17,16 @@ import {
   StepLabel,
   Chip,
 } from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "@/config/theme";
 import { PembayaranService } from "@/services/pembayaranService";
 import Script from "next/script";
 import SnapMidtransContainer from "@/components/SnapMidtransContainer";
 import Head from "next/head";
-
+import HeaderPembayaran from "@/components/HeaderPembyaran";
+import Footer from "@/components/Footer";
+import RincianTagihan from "@/components/RincianTagihan";
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
 const steps = ["MENUNGGU PEMBAYARAN", "PROSES PEMBAYRAN", "PEMBAYARAN SELESAI"];
@@ -84,6 +89,8 @@ const PembayaranTagihan = () => {
   const {
     id,
     status_pembayaran,
+    total_pembayaran,
+    jumlah_pembayaran_cash,
     tagihan_bulanan: {
       user_tagihan_bulanan: { nama, kelas, nomor_hp } = {},
       jumlah_snack,
@@ -96,6 +103,8 @@ const PembayaranTagihan = () => {
   } = billData[0] || {}; // ambil data pertama
 
   const formattedTotalTagihan = formatCurrency(total_tagihan);
+  const formattedTotalPembayaran = formatCurrency(total_pembayaran);
+  const formattedTotalPembayaranCash = formatCurrency(jumlah_pembayaran_cash);
   const formattedTotalMakanan = formatCurrency(total_makanan);
   const formattedTotalSnack = formatCurrency(total_snack);
   const bulanTagihan = new Date(bulan);
@@ -117,7 +126,7 @@ const PembayaranTagihan = () => {
 
       const parameter = {
         id_pembayaran: id,
-        total_tagihann: total_tagihan,
+        total_tagihann: total_pembayaran,
         jumlah_makanan: jumlah_makanan,
         jumlah_snack: jumlah_snack,
         total_makanan: total_makanan,
@@ -172,10 +181,11 @@ const PembayaranTagihan = () => {
       total: formattedTotalMakanan,
     },
     { nama: "Snack", jumlah: jumlah_snack, total: formattedTotalSnack },
+    { nama: "Bayar Tunai", jumlah: null, total: formattedTotalPembayaranCash },
     {
-      nama: "Total Tagihan",
+      nama: "Total Pembayaran",
       jumlah: null,
-      total: formattedTotalTagihan,
+      total: formattedTotalPembayaran,
       isBold: true,
     },
   ];
@@ -189,6 +199,7 @@ const PembayaranTagihan = () => {
           padding: 2,
           borderRadius: 4,
           boxShadow: 1,
+          marginTop: 2,
         }}
       >
         <Typography variant="h6">Status Proses Pembayaran</Typography>
@@ -207,123 +218,17 @@ const PembayaranTagihan = () => {
     const customActiveStep = status_pembayaran === "BELUM LUNAS" ? 0 : 2;
     return (
       <Container>
-        <Typography variant="h5" gutterBottom>
-          Pembayaran Tagihan
-        </Typography>
-
         <PaymentStatusStepper activeStep={customActiveStep} steps={steps} />
 
-        <Box sx={{ marginBottom: 2 }}>
-          <Box
-            sx={{
-              backgroundColor: "white",
-              padding: 2,
-              borderRadius: 4,
-              boxShadow: 1,
-            }}
-          >
-            <Typography variant="h6">Detail Pengguna</Typography>
-            <Typography>Nama: {nama}</Typography>
-            <Typography>No HP: {nomor_hp}</Typography>
-            <Typography>Kelas: {kelas}</Typography>
-          </Box>
-        </Box>
-
-        <Box sx={{ marginBottom: 2 }}>
-          <Box
-            sx={{
-              backgroundColor: "white",
-              padding: 2,
-              borderRadius: 4,
-              boxShadow: 1,
-            }}
-          >
-            <Typography variant="h6">Detail Tagihan</Typography>
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                padding: 1,
-                marginBottom: 1,
-                borderRadius: 2,
-                justifyContent: "space-between",
-                display: "flex",
-              }}
-            >
-              <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
-                Tagihan Bulan:
-              </Typography>
-              <Typography fontWeight="bold" color="#ff9a3c" variant="subtitle1">
-                {formattedBulanTagihan}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                backgroundColor: "#f5f5f5",
-                padding: 1,
-                marginBottom: 1,
-                borderRadius: 2,
-                justifyContent: "space-between",
-                display: "flex",
-              }}
-            >
-              <Typography variant="subtitle1" sx={{ marginRight: 1 }}>
-                Status Pembayaran:
-              </Typography>
-              <Chip
-                label={status_pembayaran}
-                color={
-                  status_pembayaran === "LUNAS"
-                    ? "success"
-                    : status_pembayaran === "PENDING"
-                    ? "warning"
-                    : "error"
-                }
-              />
-            </Box>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    {columns.map((column) => (
-                      <TableCell
-                        key={column}
-                        sx={{
-                          backgroundColor: "#f5f5f5",
-                          fontWeight: "bold",
-                          color: "#333",
-                        }}
-                      >
-                        {column}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell
-                        sx={{
-                          fontWeight: row.isBold ? "bold" : "normal",
-                        }}
-                      >
-                        {row.nama}
-                      </TableCell>
-                      <TableCell>{row.jumlah}</TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: row.isBold ? "bold" : "normal",
-                          color: row.isBold ? "#ff9a3c" : "#000",
-                        }}
-                      >
-                        {row.total}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </Box>
+        <RincianTagihan
+          nama={nama}
+          nomor_hp={nomor_hp}
+          kelas={kelas}
+          formattedBulanTagihan={formattedBulanTagihan}
+          status_pembayaran={status_pembayaran}
+          columns={columns}
+          rows={rows}
+        />
         {status_pembayaran === "BELUM LUNAS" && (
           <Box
             sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}
@@ -361,23 +266,39 @@ const PembayaranTagihan = () => {
   );
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
+      <HeaderPembayaran />
+      <CssBaseline />
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: "greyCool2.main",
+          flexGrow: 1,
+          overflow: "auto",
+        }}
+      >
+        {activeStep === 1
+          ? renderSnapEmbed()
+          : renderPaymentDetails(
+              createTransactionAndShowSnap,
+              paymentInitiated
+            )}
+      </Box>
+
       <Head>
         <title>
-          Proses Pembayaran Tagihan Katering Qita bulan {formattedBulanTagihan}
+          Proses Pembayaran Tagihan Katering Qita bulan
+          {formattedBulanTagihan}
         </title>
       </Head>
       <Script
         src={`https://app.sandbox.midtrans.com/snap/snap.js`}
-        // strategy="beforeInteractive"
         data-client-key={clientKey}
         type="text/javascript"
         onLoad={() => console.log("Snap script loaded")}
       />
-      {activeStep === 1
-        ? renderSnapEmbed()
-        : renderPaymentDetails(createTransactionAndShowSnap, paymentInitiated)}
-    </>
+      <Footer />
+    </ThemeProvider>
   );
 };
 

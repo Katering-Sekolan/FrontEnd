@@ -10,31 +10,25 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Header from "@/components/Header";
 import theme from "@/config/theme";
 import RincianTagihan from "@/components/RincianTagihan";
-import {
-  Box,
-  Typography,
-  Chip,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Chip, Paper } from "@mui/material";
 import { FaPrint } from "react-icons/fa6";
 import { TbFileInfo } from "react-icons/tb";
 import { PembayaranService } from "@/services/pembayaranService";
+import { Edit } from "@mui/icons-material";
+import { Container } from "@mui/material";
 
-export default function Faktur() {
+export default function CashPayment() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedPayments, setSelectedPayments] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
-  const [efektifSnack, setEfektifSnack] = useState("");
-  const [efektifMakanSiang, setEfektifMakanSiang] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [searchInput, setSearchInput] = useState("");
-  const [selectedPaymentDetails, setSelectedPaymentDetails] = useState(null);
-
   const columns = [
     { field: "user_id", headerName: "No", width: 70 },
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
+    { field: "bayar_tunai", headerName: "Bayar Tunai", width: 200 },
     {
       field: "status_pembayaran",
       headerName: "Status",
@@ -62,11 +56,11 @@ export default function Faktur() {
         <Button
           variant="contained"
           size="small"
-          startIcon={<TbFileInfo />}
+          startIcon={<Edit />}
           sx={{ marginRight: 1 }}
           onClick={() => handleEditClick(params.row)}
         >
-          Detail
+          EDIT
         </Button>
       ),
     },
@@ -93,6 +87,7 @@ export default function Faktur() {
         nomor_hp: payment.tagihan_bulanan.user_tagihan_bulanan.nomor_hp,
         total_tagihan: `Rp. ${payment.tagihan_bulanan.total_tagihan}`,
         total_pembayaran: `Rp. ${payment.total_pembayaran}`,
+        bayar_tunai: `Rp. ${payment.jumlah_pembayaran_cash}`,
         status_pembayaran: payment.status_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
         bulan: new Date(payment.tagihan_bulanan.bulan)
@@ -110,20 +105,6 @@ export default function Faktur() {
     }
   };
 
-  const handleEditClick = async (selectedPaymentId) => {
-    try {
-      const userId = selectedPaymentId.user_id;
-      const bulan = selectedPaymentId.bulan;
-
-      const response = await PembayaranService.getByUserId(userId, bulan);
-      const paymentDetails = response.data;
-      setSelectedPaymentDetails(paymentDetails);
-      handleOpenModal();
-    } catch (error) {
-      console.error("Error fetching payment details:", error);
-    }
-  };
-
   const handleOpenModal = () => {
     // Add validation logic if needed
     setOpenModal(true);
@@ -133,6 +114,11 @@ export default function Faktur() {
     setOpenModal(false);
   };
 
+  const handleEditClick = (row) => {
+    setSelectedRow(row);
+    
+    setOpenModal(true);
+  };
   const search = () => {
     const filteredPayments = monthlyPayments.filter(
       (payment) =>
@@ -186,13 +172,6 @@ export default function Faktur() {
                     }}
                     size="small"
                   />
-                  <Button
-                    endIcon={<FaPrint />}
-                    variant="contained"
-                    onClick={handleOpenModal}
-                  >
-                    PRINT FAKTUR
-                  </Button>
                 </Grid>
                 <Grid item>
                   <TextField
@@ -218,35 +197,25 @@ export default function Faktur() {
                     p: 4,
                   }}
                 >
-                  <h2>Detail Pembayaran</h2>
-                  {selectedPaymentDetails ? (
-                    <RincianTagihan
-                      nama={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.nama
-                      }
-                      nomor_hp={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.nomor_hp
-                      }
-                      kelas={
-                        selectedPaymentDetails.tagihan_bulanan
-                          .user_tagihan_bulanan.kelas
-                      }
-                      formattedBulanTagihan={
-                        selectedPaymentDetails.formattedBulanTagihan
-                      }
-                      status_pembayaran={
-                        selectedPaymentDetails.status_pembayaran
-                      }
-                      columns={selectedPaymentDetails.columns || []}
-                      rows={selectedPaymentDetails.rows || []}
-                    />
-                  ) : (
-                    <Typography>
-                      Error: Payment details not available.
-                    </Typography>
-                  )}
+                  <h2>Bayar Tunai</h2>
+                  <Container>
+                    {selectedRow && (
+                      <>
+                        <TextField
+                          label="Bayar Tunai"
+                          type="number"
+                          value=""
+                          onChange={(e) => setJumlahDeposit(e.target.value)}
+                          fullWidth
+                          margin="normal"
+                        />
+
+                        <Button variant="contained" onClick=''>
+                          TAMBAH PEMbayaran TUNAI
+                        </Button>
+                      </>
+                    )}
+                  </Container>
                 </Box>
               </Modal>
             </Paper>

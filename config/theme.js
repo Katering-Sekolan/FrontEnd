@@ -21,6 +21,15 @@ const theme = createTheme({
     greyCool: {
       main: "#D3D3D3",
     },
+    greyCool2: {
+      main: "#E8E8E8",
+    },
+    orange: {
+      main: "#ff9a3c",
+    },
+    green: {
+      main: "#128C7E",
+    },
   },
   typography: {
     fontFamily: "Poppins, sans-serif",

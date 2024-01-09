@@ -3,11 +3,12 @@ import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
   customSnapContainer: {
-    // backgroundColor: "#ffffff",
+    backgroundColor: "#ffffff",
     padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
     boxShadow: theme.shadows[1],
     width: "100%",
+    marginBottom: theme.spacing(2),
   },
 }));
 
