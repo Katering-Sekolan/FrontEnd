@@ -11,6 +11,8 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import { FaPrint } from "react-icons/fa6";
+import Button from "@mui/material/Button";
 
 const RincianTagihan = ({
   nama,
@@ -37,7 +39,7 @@ const RincianTagihan = ({
         <Typography>No HP: {nomor_hp}</Typography>
         <Typography>Kelas: {kelas}</Typography>
       </Box>
-
+      
       <Box
         sx={{
           backgroundColor: "white",

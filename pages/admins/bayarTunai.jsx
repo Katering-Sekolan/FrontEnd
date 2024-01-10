@@ -158,7 +158,7 @@ export default function CashPayment() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Tambah Tagihan Katering Qita" />
+        <Header navName="Bayar Tunai Tagihan Katering Qita" />
         <Box
           component="main"
           sx={{

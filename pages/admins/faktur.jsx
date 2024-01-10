@@ -115,6 +115,7 @@ export default function Faktur() {
 
   const handleDetailClick = (selectedPaymentId) => {
     try {
+      const id = selectedPaymentId.id;
       const jumlah_makanan = selectedPaymentId.jumlah_makanan;
       const jumlah_snack = selectedPaymentId.jumlah_snack;
       const total_makanan = selectedPaymentId.total_makanan;
@@ -183,6 +184,7 @@ export default function Faktur() {
       setColumns2(updatedColumns);
       setRows(updatedRows);
       setSelectedPaymentDetails({
+        id,
         jumlah_makanan,
         jumlah_snack,
         total_makanan,
@@ -212,6 +214,38 @@ export default function Faktur() {
     setOpenModal(false);
   };
 
+  const handlePrintInvoice = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/pdf/generatePdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paymentId: selectedPaymentDetails.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate PDF. Status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      window.open(blobUrl, "_blank");
+
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      handleCloseModal();
+      console.error("Error printing invoice:", error);
+      SweatAlertTimer(
+        "Invoice tidak dapat dicetak!",
+        "Pembayaran harus dibayar dan melalui TRANSFER!",
+        "error"
+      );
+    }
+  };
+
   const search = () => {
     const filteredPayments = monthlyPayments.filter(
       (payment) =>
@@ -226,7 +260,7 @@ export default function Faktur() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Tambah Tagihan Katering Qita" />
+        <Header navName="Faktur Katering Qita" />
         <Box
           component="main"
           sx={{
@@ -265,13 +299,13 @@ export default function Faktur() {
                     }}
                     size="small"
                   />
-                  <Button
+                  {/* <Button
                     endIcon={<FaPrint />}
                     variant="contained"
                     onClick={handleOpenModal}
                   >
                     PRINT FAKTUR
-                  </Button>
+                  </Button> */}
                 </Grid>
                 <Grid item>
                   <TextField
@@ -292,7 +326,7 @@ export default function Faktur() {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    bgcolor: "white",
+                    bgcolor: "#E8E8E8",
                     boxShadow: 24,
                     p: 2,
                     width: "80%",
@@ -302,19 +336,37 @@ export default function Faktur() {
                 >
                   <h2>Detail Pembayaran</h2>
                   {selectedPaymentDetails ? (
-                    <RincianTagihan
-                      nama={selectedPaymentDetails?.nama}
-                      nomor_hp={selectedPaymentDetails?.nomor_hp}
-                      kelas={selectedPaymentDetails?.kelas}
-                      formattedBulanTagihan={
-                        selectedPaymentDetails?.formattedBulanTagihan
-                      }
-                      status_pembayaran={
-                        selectedPaymentDetails?.status_pembayaran
-                      }
-                      columns={columns2}
-                      rows={rows}
-                    />
+                    <div>
+                      <RincianTagihan
+                        nama={selectedPaymentDetails?.nama}
+                        nomor_hp={selectedPaymentDetails?.nomor_hp}
+                        kelas={selectedPaymentDetails?.kelas}
+                        formattedBulanTagihan={
+                          selectedPaymentDetails?.formattedBulanTagihan
+                        }
+                        status_pembayaran={
+                          selectedPaymentDetails?.status_pembayaran
+                        }
+                        columns={columns2}
+                        rows={rows}
+                      />
+                      <Button
+                        variant="contained"
+                        size="large"
+                        start
+                        startIcon={<FaPrint />}
+                        color="primary"
+                        onClick={handlePrintInvoice}
+                        sx={{
+                          width: "100%",
+                          borderRadius: 4,
+                          height: "60px",
+                          marginTop: 2,
+                        }}
+                      >
+                        Print Invoice
+                      </Button>
+                    </div>
                   ) : (
                     <Typography>
                       Error: Payment details not available.

@@ -5,13 +5,6 @@ import {
   Typography,
   Box,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Stepper,
   Step,
   StepLabel,
@@ -27,6 +20,9 @@ import Head from "next/head";
 import HeaderPembayaran from "@/components/HeaderPembyaran";
 import Footer from "@/components/Footer";
 import RincianTagihan from "@/components/RincianTagihan";
+// import { PrintService } from "@/services/printServices";
+import { FaPrint } from "react-icons/fa";
+
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 
 const steps = ["MENUNGGU PEMBAYARAN", "PROSES PEMBAYRAN", "PEMBAYARAN SELESAI"];
@@ -101,6 +97,33 @@ const PembayaranTagihan = () => {
       bulan,
     } = {},
   } = billData[0] || {}; // ambil data pertama
+
+  const handlePrintInvoice = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/pdf/generatePdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paymentId: id }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to generate PDF. Status: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      window.open(blobUrl, "_blank");
+
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Error printing invoice:", error);
+      alert("Error printing invoice. Please try again later.");
+    }
+  };
 
   const formattedTotalTagihan = formatCurrency(total_tagihan);
   const formattedTotalPembayaran = formatCurrency(total_pembayaran);
@@ -181,7 +204,12 @@ const PembayaranTagihan = () => {
       total: formattedTotalMakanan,
     },
     { nama: "Snack", jumlah: jumlah_snack, total: formattedTotalSnack },
-    {nama: "Total Tagihan", jumlah: null, total: formattedTotalTagihan, bold: true},
+    {
+      nama: "Total Tagihan",
+      jumlah: null,
+      total: formattedTotalTagihan,
+      bold: true,
+    },
     { nama: "Bayar Tunai", jumlah: null, total: formattedTotalPembayaranCash },
     {
       nama: "Total Pembayaran",
@@ -215,6 +243,22 @@ const PembayaranTagihan = () => {
     );
   };
 
+  const renderPrintInvoiceButton = () => (
+    <Box sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}>
+      <Button
+        variant="contained"
+        size="large"
+        start
+        startIcon={<FaPrint />}
+        color="primary"
+        onClick={handlePrintInvoice}
+        sx={{ width: "100%", borderRadius: 4, height: "60px", marginTop: 2 }}
+      >
+        Print Invoice
+      </Button>
+    </Box>
+  );
+
   const renderPaymentDetails = (handlePaymentClick, isPaymentInitiated) => {
     const customActiveStep = status_pembayaran === "BELUM LUNAS" ? 0 : 2;
     return (
@@ -246,6 +290,8 @@ const PembayaranTagihan = () => {
             </Button>
           </Box>
         )}
+        {/* Render the Print Invoice button */}
+        {status_pembayaran === "LUNAS" && renderPrintInvoiceButton()}
       </Container>
     );
   };
