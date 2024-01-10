@@ -149,7 +149,8 @@ const PembayaranTagihan = () => {
 
       const parameter = {
         id_pembayaran: id,
-        total_tagihann: total_pembayaran,
+        total_pembayaran: total_pembayaran,
+        jumlah_pembayaran_cash: jumlah_pembayaran_cash,
         jumlah_makanan: jumlah_makanan,
         jumlah_snack: jumlah_snack,
         total_makanan: total_makanan,
@@ -159,7 +160,6 @@ const PembayaranTagihan = () => {
         kelas: kelas,
       };
 
-      // console.log("Transaction Details:", parameter);
 
       const response = await PembayaranService.createTransaksi(parameter);
       const transactionToken = response.data.token;
