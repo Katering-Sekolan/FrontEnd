@@ -65,7 +65,7 @@ export default function Pelanggan() {
           >
             Delete
           </Button> */}
-          <Button
+          {/* <Button
             variant="contained"
             size="small"
             color="success"
@@ -74,7 +74,7 @@ export default function Pelanggan() {
             onClick={() => handleWhatsappPelanggan(params.row.id)}
           >
             WA
-          </Button>
+          </Button> */}
         </>
       ),
     },

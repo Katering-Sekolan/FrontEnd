@@ -160,7 +160,7 @@ export default function TagihanBulanan() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Ubah Tagihan Katering Qita" />
+        <Header navName="Daftar Tagihan Katering Qita" />
         <Box
           component="main"
           sx={{
