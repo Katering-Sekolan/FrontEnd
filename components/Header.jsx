@@ -100,11 +100,6 @@ export default function Header(props) {
             >
               {navName}
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={0} color="primary">
-                <IoNotifications color="white" />
-              </Badge>
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

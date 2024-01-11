@@ -18,7 +18,7 @@ function AdminLoginPage() {
           SweatAlertTimer("Login Berhasil", "success");
           router.push("/admins/dashboard");
         } else if (response.status === 401) {
-          SweatAlertTimer(response.error, "warning");
+          SweatAlertTimer("Gagal", response.error, "error");
         } else {
           SweatAlertTimer("Error, Hubungi Administrator", "error");
         }
