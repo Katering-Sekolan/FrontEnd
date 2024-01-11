@@ -16,6 +16,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Grid from "@mui/material/Grid";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
+import SweatAlertDelete from "@/config/SweatAlert/delete";
 import { TagihanService } from "@/services/tagihanService";
 
 export default function TagihanBulanan() {
@@ -108,10 +109,20 @@ export default function TagihanBulanan() {
 
   const handleDeleteClick = async (row) => {
     try {
-      const response = await TagihanService.delete(row);
+      const shouldDelete = await SweatAlertDelete(
+        "Tagihan Dihapus!",
+        "Apakah Anda yakin ingin menghapus tagihan ini?",
+        "warning"
+      );
+      if (shouldDelete) {
+        const response = await TagihanService.delete(row);
 
-      fetchData();
-      SweatAlertTimer("Success!", response.data.messange, "success");
+        fetchData();
+        // handleCloseModal();
+        SweatAlertTimer("Success!", "Tagihan berhasil dihapus.", "success");
+      } else {
+        handleCloseModal();
+      }
     } catch (error) {
       console.error("Error deleting tagihan:", error);
       SweatAlertTimer("Error!", error.response.data.message, "error");
