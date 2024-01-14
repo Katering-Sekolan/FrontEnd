@@ -15,6 +15,7 @@ import { FaPrint } from "react-icons/fa6";
 import { TbFileInfo } from "react-icons/tb";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PembayaranService } from "@/services/pembayaranService";
+const baseurl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Faktur() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
@@ -216,7 +217,7 @@ export default function Faktur() {
 
   const handlePrintInvoice = async () => {
     try {
-      const response = await fetch("http://localhost:8000/pdf/generatePdf", {
+      const response = await fetch(`${baseurl}/pdf/generatePdf`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -240,7 +241,7 @@ export default function Faktur() {
       console.error("Error printing invoice:", error);
       SweatAlertTimer(
         "Invoice tidak dapat dicetak!",
-        "Pembayaran harus dibayar dan melalui TRANSFER!",
+        "Pembayaran harus melalui TRANSFER!",
         "error"
       );
     }
@@ -350,22 +351,31 @@ export default function Faktur() {
                         columns={columns2}
                         rows={rows}
                       />
-                      <Button
-                        variant="contained"
-                        size="large"
-                        start
-                        startIcon={<FaPrint />}
-                        color="primary"
-                        onClick={handlePrintInvoice}
-                        sx={{
-                          width: "100%",
-                          borderRadius: 4,
-                          height: "60px",
-                          marginTop: 2,
+                      <div
+                        style={{
+                          display:
+                            selectedPaymentDetails?.status_pembayaran ===
+                            "LUNAS"
+                              ? "block"
+                              : "none",
                         }}
                       >
-                        Print Invoice
-                      </Button>
+                        <Button
+                          variant="contained"
+                          size="large"
+                          startIcon={<FaPrint />}
+                          color="primary"
+                          onClick={handlePrintInvoice}
+                          sx={{
+                            width: "100%",
+                            borderRadius: 4,
+                            height: "60px",
+                            marginTop: 2,
+                          }}
+                        >
+                          Print Invoice
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <Typography>

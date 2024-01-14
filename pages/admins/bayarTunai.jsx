@@ -51,7 +51,7 @@ export default function CashPayment() {
     },
     { field: "total_tagihan", headerName: "Total Tagihan", width: 150 },
     { field: "total_pembayaran", headerName: "Total Pembayaran", width: 150 },
-    { field: "metode", headerName: "Metode", width: 200 },
+    { field: "metode_pembayaran", headerName: "Metode", width: 200 },
     {
       field: "action",
       headerName: "Action",
@@ -94,6 +94,7 @@ export default function CashPayment() {
         bayar_tunai: `Rp. ${payment.jumlah_pembayaran_cash}`,
         status_pembayaran: payment.status_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
+        metode_pembayaran: payment.metode_pembayaran,
         bulan: new Date(payment.tagihan_bulanan.bulan)
           .toLocaleDateString("en-US", { year: "numeric", month: "2-digit" })
           .replace(/\//g, "-")

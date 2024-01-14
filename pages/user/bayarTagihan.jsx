@@ -24,7 +24,7 @@ import RincianTagihan from "@/components/RincianTagihan";
 import { FaPrint } from "react-icons/fa";
 
 const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-
+const baseurl = process.env.NEXT_PUBLIC_API_URL;
 const steps = ["MENUNGGU PEMBAYARAN", "PROSES PEMBAYRAN", "PEMBAYARAN SELESAI"];
 
 const PembayaranTagihan = () => {
@@ -100,7 +100,7 @@ const PembayaranTagihan = () => {
 
   const handlePrintInvoice = async () => {
     try {
-      const response = await fetch("http://localhost:8000/pdf/generatePdf", {
+      const response = await fetch(`${baseurl}/pdf/generatePdf`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -159,7 +159,6 @@ const PembayaranTagihan = () => {
         nomor_hp: nomor_hp,
         kelas: kelas,
       };
-
 
       const response = await PembayaranService.createTransaksi(parameter);
       const transactionToken = response.data.token;
@@ -248,7 +247,6 @@ const PembayaranTagihan = () => {
       <Button
         variant="contained"
         size="large"
-        start
         startIcon={<FaPrint />}
         color="primary"
         onClick={handlePrintInvoice}
