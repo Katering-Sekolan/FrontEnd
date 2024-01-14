@@ -21,7 +21,11 @@ function AdminLoginForm({ onAdminLogin }) {
 
     // Validasi
     if (!username || !password) {
-      return SweatAlertTimer("Username dan password harus diisi", "error");
+      return SweatAlertTimer(
+        "Gagal!",
+        "Username dan password harus diisi",
+        "error"
+      );
     }
     onAdminLogin({ username, password });
   };
