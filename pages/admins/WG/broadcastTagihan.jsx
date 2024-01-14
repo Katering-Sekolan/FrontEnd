@@ -9,20 +9,27 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Header from "@/components/Header";
 import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import theme from "@/config/theme";
 import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { TagihanService } from "@/services/tagihanService";
 import { WhatsAppService } from "@/services/whatsappService";
+const { io } = require("socket.io-client");
 
 export default function BroadcastTagihan() {
   const [pelangganList, setPelangganList] = useState([]);
   const [tagihanDate, setTagihanDate] = useState(null);
-  console.log(tagihanDate);
+  const [status, setStatus] = useState("Disconnected");
 
   useEffect(() => {
     if (tagihanDate) {
       fetchData();
     }
+
+    const socket = io(process.env.NEXT_PUBLIC_API_URL);
+    socket.on("message", (receivedStatus) => {
+      setStatus(receivedStatus);
+    });
   }, [tagihanDate]);
 
   const fetchData = async () => {
@@ -117,6 +124,9 @@ export default function BroadcastTagihan() {
                       >
                         Broadcast Pesan
                       </Button>
+                      <Typography variant="subtitle1" color={"white"}>
+                        {status}
+                      </Typography>
                     </Grid>
                   )}
                 </Grid>
