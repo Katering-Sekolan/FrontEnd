@@ -18,12 +18,7 @@ export default function Connection() {
   const [status, setStatus] = useState("Disconnected");
 
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_API_URL, {
-      withCredentials: true,
-      extraHeaders: {
-        "my-custom-header": "abcd",
-      },
-    });
+    const socket = io(process.env.NEXT_PUBLIC_API_URL);
 
     socket.on("qrCode", (receivedQrCode) => {
       setQrCode(receivedQrCode);

@@ -26,15 +26,15 @@ export default function BroadcastTagihan() {
       fetchData();
     }
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL, {
-      withCredentials: true,
-      extraHeaders: {
-        "my-custom-header": "abcd",
-      },
-    });
-    socket.on("message", (receivedStatus) => {
-      setStatus(receivedStatus);
-    });
+    // const socket = io(process.env.NEXT_PUBLIC_API_URL, {
+    //   withCredentials: true,
+    //   extraHeaders: {
+    //     "my-custom-header": "abcd",
+    //   },
+    // });
+    // socket.on("message", (receivedStatus) => {
+    //   setStatus(receivedStatus);
+    // });
   }, [tagihanDate]);
 
   const fetchData = async () => {
@@ -130,7 +130,7 @@ export default function BroadcastTagihan() {
                         Broadcast Pesan
                       </Button>
                       <Typography variant="subtitle1" color={"white"}>
-                        {status}
+                        {/* {status} */}
                       </Typography>
                     </Grid>
                   )}
