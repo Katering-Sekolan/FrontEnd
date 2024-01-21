@@ -28,7 +28,7 @@ export default function CashPayment() {
   const [bayarTunai, setBayarTunai] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const columns = [
-    { field: "id", headerName: "No", width: 70 },
+    { field: "raw_id", headerName: "No", width: 70 },
     { field: "nama", headerName: "Nama", width: 250 },
     { field: "nomor_hp", headerName: "Nomor HP", width: 200 },
     { field: "bayar_tunai", headerName: "Bayar Tunai", width: 200 },
@@ -85,6 +85,7 @@ export default function CashPayment() {
       const response = await PembayaranService.getByMonth(paymentDate);
       const data = response.data.map((payment) => ({
         id: payment.id,
+        raw_id: response.data.indexOf(payment) + 1,
         user_id: payment.tagihan_bulanan.user_id,
         nama: payment.tagihan_bulanan.user_tagihan_bulanan.nama,
         kelas: payment.tagihan_bulanan.user_tagihan_bulanan.kelas,
@@ -146,12 +147,27 @@ export default function CashPayment() {
   };
 
   const search = () => {
-    const filteredPayments = monthlyPayments.filter(
-      (payment) =>
-        payment.nama.toLowerCase().includes(searchInput.toLowerCase()) ||
-        payment.nomor_hp.toString().includes(searchInput.toLowerCase()) ||
-        payment.kelas.toLowerCase().includes(searchInput.toLowerCase())
-    );
+    const filteredPayments = monthlyPayments.filter((payment) => {
+      const lowercaseSearchInput = searchInput.toLowerCase();
+      const lowercaseStatus = payment.status_pembayaran.toLowerCase();
+
+      if (lowercaseSearchInput === "lunas" && lowercaseStatus === "lunas") {
+        return true;
+      } else if (
+        lowercaseSearchInput === "belum lunas" &&
+        lowercaseStatus.includes("belum lunas")
+      ) {
+        return true;
+      } else {
+        return (
+          payment.nama.toLowerCase().includes(lowercaseSearchInput) ||
+          payment.nomor_hp.toString().includes(lowercaseSearchInput) ||
+          payment.kelas.toLowerCase().includes(lowercaseSearchInput) ||
+          payment.metode_pembayaran.toLowerCase().includes(lowercaseSearchInput)
+        );
+      }
+    });
+
     setSearchResults(filteredPayments);
   };
 
@@ -201,7 +217,7 @@ export default function CashPayment() {
                 </Grid>
                 <Grid item>
                   <TextField
-                    label="cari Nama, Nomor HP, atau Kelas"
+                    label="Cari Nama, Nomor HP, Kelas, Status, atau Metode"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     variant="outlined"

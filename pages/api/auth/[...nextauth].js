@@ -15,7 +15,7 @@ export default NextAuth({
         // For example, make an API call to validate credentials
         try {
           const res = await fetch(
-            process.env.NEXT_PUBLIC_API_URL + "/auth/loginAdmin",
+            process.env.NEXT_PUBLIC_API_URL + "auth/loginAdmin",
             {
               method: "POST",
               body: JSON.stringify(credentials),

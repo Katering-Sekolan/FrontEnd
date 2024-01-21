@@ -26,7 +26,12 @@ export default function BroadcastTagihan() {
       fetchData();
     }
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL);
+    const socket = io(process.env.NEXT_PUBLIC_API_URL, {
+      withCredentials: true,
+      extraHeaders: {
+        "my-custom-header": "abcd",
+      },
+    });
     socket.on("message", (receivedStatus) => {
       setStatus(receivedStatus);
     });

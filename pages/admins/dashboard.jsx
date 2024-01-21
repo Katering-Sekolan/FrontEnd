@@ -20,10 +20,13 @@ export default function Dashboard() {
   const router = useRouter();
   const [countUser, setCountUser] = useState(null);
   const [countAdmin, setCountAdmin] = useState(null);
-
+  const [countTagihan, setCountTagihan] = useState(null);
+  const [countLunas, setCountLunas] = useState(null);
   useEffect(() => {
     countUsers();
     countAdmins();
+    countTagihans();
+    countLunass();
   }, []);
 
   const countUsers = async () => {
@@ -43,6 +46,29 @@ export default function Dashboard() {
       console.error("Error fetching data:", error);
     }
   };
+
+  const countTagihans = async () => {
+    try {
+      const response = await CountService.getCountTagihan();
+      setCountTagihan(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const countLunass = async () => {
+    try {
+      const response = await CountService.getCountLunas();
+      setCountLunas(response.data.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const formattedCountTagihan = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(countTagihan);
 
   return (
     <ThemeProvider theme={theme}>
@@ -135,28 +161,54 @@ export default function Dashboard() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     height: 240,
-                    backgroundColor: "#FAAB78",
+                    backgroundColor: "#792BAF",
                   }}
                 >
                   <div>
-                    <FaMoneyBillWave size={"90px"} color="white" />
+                    <FaUser size={"90px"} color="white" />
                   </div>
                   <div>
                     <Typography variant="h5" color="white" gutterBottom>
-                      Tagihan Bulan Ini
+                      Total Lunas
                     </Typography>
                     <Typography
-                      variant="h2"
+                      variant="h1"
                       color="white"
                       gutterBottom
-                      sx={{ marginTop: "auto", fontSize: "50px" }}
+                      sx={{ marginTop: "auto", fontSize: "100px" }}
                     >
-                      {/* {countAdmin} */}
-                      Rp 1.250.000
+                      {countLunas}
                     </Typography>
                   </div>
                 </Paper>
               </Grid>
+              <Grid item xs={12} md={8} lg={12}>
+                <Paper
+                  sx={{
+                    borderRadius: 5,
+                    p: 2,
+                    display: "flex",
+                    flexDirection: "row", 
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    height: "100%", 
+                    backgroundColor: "#FAAB78",
+                  }}
+                >
+                  <div>
+                    {/* <FaMoneyBillWave size={"90px"} color="white" /> */}
+                  </div>
+                  <div >
+                    <Typography variant="h4" color="white" gutterBottom>
+                      Tagihan Bulan Ini
+                    </Typography>
+                    <Typography variant="h2" color="white" gutterBottom>
+                      {formattedCountTagihan}
+                    </Typography>
+                  </div>
+                </Paper>
+              </Grid>
+              );
             </Grid>
           </Container>
         </Box>
