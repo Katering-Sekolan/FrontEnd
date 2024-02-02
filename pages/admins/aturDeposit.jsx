@@ -50,6 +50,13 @@ export default function DepositManagement() {
     },
   ];
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
   const fetchData = async () => {
     try {
       const response = await DepositService.getAll();
@@ -57,7 +64,7 @@ export default function DepositManagement() {
       const depositsWithId = response.data.data.map((deposit, index) => ({
         id: deposit.id,
         index: index + 1,
-        jumlah_deposit: deposit.jumlah_deposit,
+        jumlah_deposit: formatCurrency(deposit.jumlah_deposit),
         tanggal_deposit: deposit.f_tanggal_deposit,
         nama: deposit.user.nama,
         kelas: deposit.user.kelas,

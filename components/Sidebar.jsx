@@ -71,11 +71,15 @@ const menuItems = [
     link: "/admins/pembayaran",
     dropdown: true,
     submenu: [
-      { icon: <FaMoneyBills />, text: "Bayar Tunai", link: "/admins/bayarTunai" },
+      {
+        icon: <FaMoneyBills />,
+        text: "Bayar Tunai",
+        link: "/admins/bayarTunai",
+      },
       {
         icon: <FaMoneyBillTransfer />,
-        text: "Faktur",
-        link: "/admins/faktur",
+        text: "Riwayat Pembayaran",
+        link: "/admins/riwayatPembayaran",
       },
     ],
   },

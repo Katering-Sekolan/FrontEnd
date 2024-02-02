@@ -80,6 +80,13 @@ export default function CashPayment() {
     search();
   }, [searchInput, monthlyPayments]);
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
   const fetchMonthlyPayments = async () => {
     try {
       const response = await PembayaranService.getByMonth(paymentDate);
@@ -90,9 +97,9 @@ export default function CashPayment() {
         nama: payment.tagihan_bulanan.user_tagihan_bulanan.nama,
         kelas: payment.tagihan_bulanan.user_tagihan_bulanan.kelas,
         nomor_hp: payment.tagihan_bulanan.user_tagihan_bulanan.nomor_hp,
-        total_tagihan: `Rp. ${payment.tagihan_bulanan.total_tagihan}`,
-        total_pembayaran: `Rp. ${payment.total_pembayaran}`,
-        bayar_tunai: `Rp. ${payment.jumlah_pembayaran_cash}`,
+        total_tagihan: formatCurrency(payment.tagihan_bulanan.total_tagihan),
+        total_pembayaran: formatCurrency(payment.total_pembayaran),
+        bayar_tunai: formatCurrency(payment.jumlah_pembayaran_cash),
         status_pembayaran: payment.status_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
         metode_pembayaran: payment.metode_pembayaran,

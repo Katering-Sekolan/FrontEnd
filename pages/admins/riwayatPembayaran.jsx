@@ -17,7 +17,7 @@ import SweatAlertTimer from "@/config/SweatAlert/timer";
 import { PembayaranService } from "@/services/pembayaranService";
 const baseurl = process.env.NEXT_PUBLIC_API_URL;
 
-export default function Faktur() {
+export default function riwayatPembayaran() {
   const [monthlyPayments, setMonthlyPayments] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [openModal, setOpenModal] = useState(false);
@@ -79,6 +79,13 @@ export default function Faktur() {
     search();
   }, [searchInput, monthlyPayments]);
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
   const fetchMonthlyPayments = async () => {
     try {
       const response = await PembayaranService.getByMonth(paymentDate);
@@ -89,16 +96,16 @@ export default function Faktur() {
         nama: payment.tagihan_bulanan.user_tagihan_bulanan.nama,
         kelas: payment.tagihan_bulanan.user_tagihan_bulanan.kelas,
         nomor_hp: payment.tagihan_bulanan.user_tagihan_bulanan.nomor_hp,
-        total_tagihan: `Rp. ${payment.tagihan_bulanan.total_tagihan}`,
-        total_pembayaran: `Rp. ${payment.total_pembayaran}`,
+        total_tagihan: formatCurrency(payment.tagihan_bulanan.total_tagihan),
+        total_pembayaran: formatCurrency(payment.total_pembayaran),
         status_pembayaran: payment.status_pembayaran,
         metode_pembayaran: payment.metode_pembayaran,
         tanggal_pembayaran: payment.tanggal_pembayaran,
         jumlah_makanan: payment.tagihan_bulanan.jumlah_makanan,
         jumlah_snack: payment.tagihan_bulanan.jumlah_snack,
-        total_makanan: payment.tagihan_bulanan.total_makanan,
-        total_snack: payment.tagihan_bulanan.total_snack,
-        jumlah_pembayaran_cash: payment.jumlah_pembayaran_cash,
+        total_makanan: formatCurrency(payment.tagihan_bulanan.total_makanan),
+        total_snack: formatCurrency(payment.tagihan_bulanan.total_snack),
+        jumlah_pembayaran_cash: formatCurrency(payment.jumlah_pembayaran_cash),
         tanggal_pembayaran: new Date(payment.tanggal_pembayaran),
 
         bulan: new Date(payment.tagihan_bulanan.bulan)
@@ -130,21 +137,15 @@ export default function Faktur() {
       const kelas = selectedPaymentId.kelas;
       const nomor_hp = selectedPaymentId.nomor_hp;
       const total_pembayaran = selectedPaymentId.total_pembayaran;
-      const formatCurrency = (amount) => {
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-        }).format(amount);
-      };
 
-      const formattedTotalTagihan = formatCurrency(total_tagihan);
-      const formattedTotalPembayaran = formatCurrency(total_pembayaran);
+      // const formattedTotalTagihan = formatCurrency(total_tagihan);
+      // const formattedTotalPembayaran = formatCurrency(total_pembayaran);
 
-      const formattedTotalPembayaranCash = formatCurrency(
-        jumlah_pembayaran_cash
-      );
-      const formattedTotalMakanan = formatCurrency(total_makanan);
-      const formattedTotalSnack = formatCurrency(total_snack);
+      // const formattedTotalPembayaranCash = formatCurrency(
+      //   jumlah_pembayaran_cash
+      // );
+      // const formattedTotalMakanan = formatCurrency(total_makanan);
+      // const formattedTotalSnack = formatCurrency(total_snack);
 
       const bulanTagihan = new Date(bulan);
       const formattedBulanTagihan =
@@ -161,9 +162,9 @@ export default function Faktur() {
         {
           nama: "Makanan Siang",
           jumlah: jumlah_makanan,
-          total: formattedTotalMakanan,
+          total: total_makanan,
         },
-        { nama: "Snack", jumlah: jumlah_snack, total: formattedTotalSnack },
+        { nama: "Snack", jumlah: jumlah_snack, total: total_snack },
         {
           nama: "Total Tagihan",
           jumlah: null,
@@ -173,7 +174,7 @@ export default function Faktur() {
         {
           nama: "Bayar Tunai",
           jumlah: null,
-          total: formattedTotalPembayaranCash,
+          total: jumlah_pembayaran_cash,
         },
         {
           nama: "Total Pembayaran",
@@ -191,14 +192,14 @@ export default function Faktur() {
         jumlah_snack,
         total_makanan,
         total_snack,
-        formattedTotalTagihan,
+        total_tagihan,
         jumlah_pembayaran_cash,
         status_pembayaran,
         bulan,
         nama,
         kelas,
         nomor_hp,
-        formattedTotalPembayaran,
+        total_pembayaran,
         formattedBulanTagihan,
       });
 
@@ -239,9 +240,9 @@ export default function Faktur() {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       handleCloseModal();
-      console.error("Error printing invoice:", error);
+      console.error("Error printing kwitansi:", error);
       SweatAlertTimer(
-        "Invoice tidak dapat dicetak!",
+        "Kwitansi tidak dapat dicetak!",
         "Pembayaran harus melalui TRANSFER!",
         "error"
       );
@@ -277,7 +278,7 @@ export default function Faktur() {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Header navName="Faktur Katering Qita" />
+        <Header navName="Riwayat Pembayaran Katering Qita" />
         <Box
           component="main"
           sx={{
@@ -389,7 +390,7 @@ export default function Faktur() {
                             marginTop: 2,
                           }}
                         >
-                          Print Invoice
+                          Print Kwitansi
                         </Button>
                       </div>
                     </div>

@@ -67,6 +67,13 @@ export default function TagihanBulanan() {
     },
   ];
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
   const fetchData = async () => {
     try {
       const response = await TagihanService.getByMonth(tagihanDate);
@@ -76,7 +83,7 @@ export default function TagihanBulanan() {
         idTagihan: pelanggan.id,
         nama: pelanggan.user_tagihan_bulanan.nama,
         kelas: pelanggan.user_tagihan_bulanan.kelas,
-        total_tagihan: `Rp. ${pelanggan.total_tagihan}`,
+        total_tagihan: formatCurrency (pelanggan.total_tagihan),
         noHP: pelanggan.user_tagihan_bulanan.nomor_hp,
         efektif_snack: pelanggan.jumlah_snack,
         efektif_makanSiang: pelanggan.jumlah_makanan,
