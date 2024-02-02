@@ -188,17 +188,17 @@ export default function Dashboard() {
                     borderRadius: 5,
                     p: 2,
                     display: "flex",
-                    flexDirection: "row", 
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    height: "100%", 
+                    height: "100%",
                     backgroundColor: "#FAAB78",
                   }}
                 >
                   <div>
                     {/* <FaMoneyBillWave size={"90px"} color="white" /> */}
                   </div>
-                  <div >
+                  <div>
                     <Typography variant="h4" color="white" gutterBottom>
                       Tagihan Bulan Ini
                     </Typography>
@@ -208,7 +208,6 @@ export default function Dashboard() {
                   </div>
                 </Paper>
               </Grid>
-              );
             </Grid>
           </Container>
         </Box>

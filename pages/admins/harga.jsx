@@ -25,9 +25,27 @@ export default function Harga() {
     fetchData();
   }, []);
 
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(amount);
+  };
+
   const fetchData = async () => {
-    const response = await HargaService.getAll();
-    setHarga(response.data.data);
+    try {
+      const response = await HargaService.getAll();
+      const data = response.data.data.map((item, index) => {
+        return {
+          ...item,
+          id: index + 1,
+          formattedHarga: formatCurrency(item.harga),
+        };
+      });
+      setHarga(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleUpdate = async () => {
@@ -45,7 +63,7 @@ export default function Harga() {
   const columns = [
     { field: "id", headerName: "No", width: 70 },
     { field: "jenis", headerName: "Jenis", width: 250 },
-    { field: "harga", headerName: "Harga", width: 200 },
+    { field: "formattedHarga", headerName: "Harga", width: 200 },
     {
       field: "actions",
       headerName: "Actions",

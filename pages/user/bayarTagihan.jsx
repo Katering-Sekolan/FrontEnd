@@ -120,8 +120,8 @@ const PembayaranTagihan = () => {
 
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
-      console.error("Error printing invoice:", error);
-      alert("Error printing invoice. Please try again later.");
+      console.error("Error printing kwitansi:", error);
+      alert("Error printing kwitansi. Please try again later.");
     }
   };
 
@@ -252,7 +252,7 @@ const PembayaranTagihan = () => {
         onClick={handlePrintInvoice}
         sx={{ width: "100%", borderRadius: 4, height: "60px", marginTop: 2 }}
       >
-        Print Invoice
+        Print Kwitansi
       </Button>
     </Box>
   );

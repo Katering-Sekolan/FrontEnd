@@ -6,7 +6,7 @@ export const PrintService = {
             const response = await API.post(`/pdf/generatePdf`, data);
             return response.data;
         } catch (error) {
-            console.error("Error printing invoice:", error);
+            console.error("Error printing kwitansi:", error);
             throw error;
         }
     },
